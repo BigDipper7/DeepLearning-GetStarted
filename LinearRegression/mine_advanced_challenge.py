@@ -1,6 +1,7 @@
 from sklearn import linear_model
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 lin_reg_model = linear_model.LinearRegression()
 
@@ -25,3 +26,11 @@ plt.scatter(X_test, y_test, color='green', marker='.')
 plt.scatter(X_test, lin_reg_model.predict(X_test), color='orange', marker='x')
 plt.plot(X_test, lin_reg_model.predict(X_test))
 plt.show()
+
+# The coefficients
+print('Coefficients: \n', lin_reg_model.coef_)
+# The mean squared error
+print("Mean squared error: %.2f"
+      % np.mean((lin_reg_model.predict(X_test) - y_test) ** 2))
+# Explained variance score: 1 is perfect prediction
+print('Variance score: %.2f' % lin_reg_model.score(X_test, y_test))
