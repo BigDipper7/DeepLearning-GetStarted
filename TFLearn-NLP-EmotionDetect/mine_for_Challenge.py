@@ -68,6 +68,7 @@ test_Y = Y_score_phrase[n_split_train:]
 # train_X = pad_sequences(train_X, maxlen=10, value=0.)
 # change the data
 train_Y = to_categorical(train_Y, nb_classes=len(labels))
+validate_Y = to_categorical(validate_Y, nb_classes=len(labels))
 # print train_Y
 
 
