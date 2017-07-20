@@ -103,3 +103,4 @@ ENV/
 # mine deep learning ignore files
 */tmp/tf_log/*
 *.pkl
+.idea/*

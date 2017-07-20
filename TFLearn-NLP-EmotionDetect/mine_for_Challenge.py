@@ -48,6 +48,7 @@ for y_item in Y_score_phrase['score_phrase']:
 
 print 'labels: ', labels
 print 'label statistics: ', labels_statistics
+Y_score_phrase = Y_score_phrase_nums
 
 
 # split the data
@@ -66,7 +67,7 @@ test_Y = Y_score_phrase[n_split_train:]
 # print train_X[0:100]
 # train_X = pad_sequences(train_X, maxlen=10, value=0.)
 # change the data
-# train_Y = to_categorical(train_Y, nb_classes=8)
+train_Y = to_categorical(train_Y, nb_classes=len(labels))
 # print train_Y
 
 
