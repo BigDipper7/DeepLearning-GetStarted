@@ -76,7 +76,7 @@ validate_Y = to_categorical(validate_Y, nb_classes=len(labels))
 net = tflearn.input_data(shape=[None, MAX_TITLE_SIZE])
 net = tflearn.embedding(net, input_dim=10000, output_dim=128)
 net = tflearn.lstm(net, n_units=256, dropout=0.8)
-net = tflearn.fully_connected(net, n_units=8, activation='softmax')
+net = tflearn.fully_connected(net, n_units=len(labels), activation='softmax')
 net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.01)
 
 
