@@ -15,7 +15,7 @@ def str_to_boolean(v):
 
 
 # util function to open, resize and format pictures into appropriate tensors
-def pre_process_image(image_path, load_dims=False):
+def pre_process_image(image_path, img_width=100, img_height=100, load_dims=False):
     global img_WIDTH, img_HEIGHT, aspect_ratio
 
     img = imread(image_path, mode="RGB")  # Prevents crashes due to PNG images (ARGB)
