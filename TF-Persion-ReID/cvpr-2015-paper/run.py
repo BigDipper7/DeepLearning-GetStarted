@@ -148,6 +148,7 @@ def main(argv=None):
             saver.restore(sess, ckpt.model_checkpoint_path)
 
         if FLAGS.mode == 'train':
+            print ("start tensorflow training...")
             step = sess.run(global_step)
             for i in xrange(step, FLAGS.max_steps + 1):
                 batch_images, batch_labels = cuhk03_dataset.read_data(FLAGS.data_dir, 'train', tarin_num_id,
