@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 import cuhk03_dataset
+import time
 
 FLAGS = tf.flags.FLAGS
 tf.flags.DEFINE_integer('batch_size', '150', 'batch size for training')
@@ -151,13 +152,15 @@ def main(argv=None):
             print ("start tensorflow training...")
             step = sess.run(global_step)
             for i in xrange(step, FLAGS.max_steps + 1):
+                step_start_time = time.time()
                 batch_images, batch_labels = cuhk03_dataset.read_data(FLAGS.data_dir, 'train', tarin_num_id,
                     IMAGE_WIDTH, IMAGE_HEIGHT, FLAGS.batch_size)
                 feed_dict = {learning_rate: lr, images: batch_images,
                     labels: batch_labels, is_train: True}
                 sess.run(train, feed_dict=feed_dict)
                 train_loss = sess.run(loss, feed_dict=feed_dict)
-                print('Step: %d, Learning rate: %f, Train loss: %f' % (i, lr, train_loss))
+                print('Step: %d, Learning rate: %f, Train loss: %f, cost: %.3f s, at Time: %s' %
+                      (i, lr, train_loss, (time.time()-step_start_time), time.ctime(time.time())))
 
                 lr = FLAGS.learning_rate * ((0.0001 * i + 1) ** -0.75)
                 if i % 1000 == 0:
