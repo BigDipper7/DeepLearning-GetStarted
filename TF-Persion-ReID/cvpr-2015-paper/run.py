@@ -139,7 +139,8 @@ def main(argv=None):
     train = optimizer.minimize(loss, global_step=global_step)
     lr = FLAGS.learning_rate
 
-    with tf.Session() as sess:
+    with tf.Session(config=tf.ConfigProto(device_count={"CPU": 32}, inter_op_parallelism_threads=1,
+                                          intra_op_parallelism_threads=1, )) as sess:
         sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
 
@@ -163,7 +164,7 @@ def main(argv=None):
                       (i, lr, train_loss, (time.time()-step_start_time), time.ctime(time.time())))
 
                 lr = FLAGS.learning_rate * ((0.0001 * i + 1) ** -0.75)
-                if i % 1000 == 0:
+                if i % 100 == 0:
                     saver.save(sess, FLAGS.logs_dir + 'model.ckpt', i)
         elif FLAGS.mode == 'val':
             total = 0.
