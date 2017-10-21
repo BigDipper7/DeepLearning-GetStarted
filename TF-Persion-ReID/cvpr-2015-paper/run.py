@@ -139,8 +139,7 @@ def main(argv=None):
     train = optimizer.minimize(loss, global_step=global_step)
     lr = FLAGS.learning_rate
 
-    with tf.Session(config=tf.ConfigProto(device_count={"CPU": 32}, inter_op_parallelism_threads=1,
-                                          intra_op_parallelism_threads=1, )) as sess:
+    with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
 
