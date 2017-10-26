@@ -88,7 +88,14 @@ def get_pair(path, set, num_id, positive):
         pair.append(filepath)
     return pair
 
+
 def get_num_id(path, set):
+    """
+    get all entities number of the Dataset (:param set)
+    :param path: the dataset root path
+    :param set: dataset name
+    :return:
+    """
     files = os.listdir('%s/labeled/%s' % (path, set))
     files.sort()
     return int(files[-1].split('_')[0]) - int(files[0].split('_')[0]) + 1
@@ -96,7 +103,7 @@ def get_num_id(path, set):
 def read_data(path, set, num_id, image_width, image_height, batch_size):
     batch_images = []
     labels = []
-    for i in xrange(batch_size // 2):
+    for i in xrange(batch_size // 2):  # floordiv of python
         pairs = [get_pair(path, set, num_id, True), get_pair(path, set, num_id, False)]
         for pair in pairs:
             images = []
