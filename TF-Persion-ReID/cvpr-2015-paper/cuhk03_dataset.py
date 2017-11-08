@@ -78,7 +78,7 @@ def get_pair(path, set, num_id, positive):
         4. return the id pair
     :param path: root data file path
     :param set: "val" or "train" | dataset name
-    :param num_id: whole entity number
+    :param num_id: whole entity number, using to generate randomly id of the pair
     :param positive: "True" or "False", if is positive image pair
     :return: a pair of image file path
     """
@@ -117,13 +117,55 @@ def get_num_id(path, set):
 
 
 def read_data(path, set, num_id, image_width, image_height, batch_size):
+    """
+    Get image positive and negative batch data with a mount of (:param batch_size)
+    half of the (:param batch_size) is positive images and the remain half is negative images (with the same size)
+    Also get image pair label:
+        positive [1., 0.] ;
+        negative [0., 1.] ;
+
+    :param path: the data set root path
+    :param set: the dataset category / dataset name | "val" or "train" | dataset name
+    :param num_id: whole entity number, using to generate randomly id of the pair
+    :param image_width: Target output width per image, using for imresize
+    :param image_height: Target output height per image, using for imresize
+    :param batch_size: batch size
+    :return: return a list of +/- images and a list of corresponding labels
+
+        1: training or validating image data list:
+        [
+            [positive_rgb_image_a_tensor_1, positive_rgb_image_a_tensor_2],
+            [negative_rgb_image_b_tensor_1, negative_rgb_image_c_tensor_2],
+
+            [positive_rgb_image_d_tensor_1, positive_rgb_image_d_tensor_2],
+            [negative_rgb_image_e_tensor_1, negative_rgb_image_f_tensor_2],
+
+            ...
+        ]
+        size: 2 * ([:param batch_size] // 2)
+
+        2: training or validating image label list:
+        [
+            [1., 0.],
+            [0., 1.],
+
+            [1., 0.],
+            [0., 1.],
+
+            ...
+        ]
+        size: 2 * ([:param batch_size] // 2)
+
+    """
     batch_images = []
     labels = []
     for i in xrange(batch_size // 2):  # floordiv of python
+
+        # get POSITIVE target image filepath pair and NEGATIVE target image filepath pair
         pairs = [get_pair(path, set, num_id, True), get_pair(path, set, num_id, False)]
         for pair in pairs:
             images = []
-            for p in pair:
+            for p in pair:  # p is the pair of filepath
                 # get image tensor, and add it to a array
                 image = cv2.imread(p)
                 image = cv2.resize(image, (image_width, image_height))
