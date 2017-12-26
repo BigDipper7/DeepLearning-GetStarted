@@ -37,7 +37,7 @@ def maxpooling2d(X, k, stride, padding='SAME', name='maxpool_default'):
     return maxpool
 
 
-def norm4d(X, radius, name):
+def norm4d(X, radius, name='norm_default'):
     norm = tf.nn.lrn(X, depth_radius=radius, bias=1.0, alpha=0.001/9.0, beta=0.75, name=name)
     return norm
 
@@ -78,3 +78,57 @@ bias = {                                                        # [None, 28, 28,
     'f2': tf.Variable(dtype='float32', expected_shape=[4096]),  # [None, 4096]
     'out': tf.Variable(dtype='float32', expected_shape=[10]),   # [None, 10]
 }
+
+# define network
+def alexnet(X):
+    X = tf.reshape(X, [-1, 28, 28, 1], name='inputX')
+    # [None, 28, 28, 1]
+
+    conv1 = conv2d(X, weights['c1'], strides['c1'], bias['c1'], name='conv1')
+    # [None, 28, 28, 96]
+    norm1 = norm4d(conv1, 5, name='norm1')
+    # [None, 28, 28, 96]
+
+    conv2 = conv2d(norm1, weights['c2'], strides['c2'], bias['c2'], name='conv2')
+    # [None, 28, 28, 256]
+    norm2 = norm4d(conv2, 5, name='norm2')
+    # [None, 28, 28, 256]
+
+    maxpool1 = maxpooling2d(norm2, weights['m1'], strides['m1'], name='maxpool1')
+    # [None, 14, 14, 256]
+
+    conv3 = conv2d(maxpool1, weights['c3'], strides['c3'], bias['c3'], name='conv3')
+    # [None, 14, 14, 384]
+    norm3 = norm4d(conv3, 5, name='norm3')
+    # [None, 14, 14, 384]
+
+    maxpool2 = maxpooling2d(norm3, weights['m2'], strides['m2'], name='maxpool2')
+    # [None, 7, 7, 384]
+
+    conv4 = conv2d(maxpool2, weights['c4'], strides['c4'], bias['c4'], name='conv4')
+    # [None, 7, 7, 384]
+    norm4 = norm4d(conv4, 5, name='norm4')
+    # [None, 7, 7, 384]
+
+    conv5 = conv2d(norm4, weights['c5'], strides['c5'], bias['c5'], name='conv5')
+    # [None, 7, 7, 256]
+    norm5 = norm4d(conv5, 5, name='norm5')
+    # [None, 7, 7, 256]
+
+    maxpool3 = maxpooling2d(norm5, weights['m3'], strides['m3'], name='maxpool3')
+    # [None, 4, 4, 256]
+
+    fc1 = tf.reshape(maxpool3, [-1, 4 * 4 * 256], name='reshape_to_vector')
+    # [None, 4 * 4 * 256]
+    fc1 = tf.matmul(fc1, weights['f1'])
+    # [None, 4096]
+    fc1 = tf.nn.bias_add(fc1, bias['f1'])
+    fc1 = tf.nn.relu(fc1, name='relu_fc1')
+
+    fc2 = tf.nn.bias_add(tf.matmul(fc1, weights['f2']), bias['f2'])
+    fc2 = tf.nn.relu(fc2)
+
+    out = tf.nn.bias_add(tf.matmul(fc2, weights['f2']), bias['out'])
+
+    return out
+
