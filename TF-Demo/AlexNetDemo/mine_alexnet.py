@@ -166,10 +166,17 @@ with tf.Session() as sess:
     keep_prob = tf.placeholder(dtype='float32', name='oriKeepProb')
 
     # define network
-    pred = alexnet(x, weights, bias, strides, keep_prob)
+    logits = alexnet(x, weights, bias, strides, keep_prob)
     # calculate loss
-    loss = tf.reduce_mean(y - pred)
+    # loss = tf.reduce_mean(y - pred) #TODO: you wen ti
+    loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss, global_step=global_step)
+    # predict
+    # show whether MAX arg index is matched
+    corr_pred = tf.equal(tf.arg_max(logits, 1), tf.arg_max(y, 1))  # arg_max return index!
+    # get a Tensor of [None, 1], and '1' is a array of [True, False]. Result is like [True, False, False, True, True]
+    accuracy = tf.reduce_mean(tf.cast(corr_pred, dtype='float32'))  # Firstly, cast True/False to 1./0.; Then, calculate the mean
+    # get a num of dtype=np.float32 represents the accurate
 
     print 'All Definitions are prepared....'
 
@@ -185,10 +192,16 @@ with tf.Session() as sess:
 
         # training...
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: dropout})
+        print 'Train Step: %d optimized, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
 
         if global_step.eval() % MODEL_SAVE_SPAN == 0:
             saver.save(sess, MODEL_PATH, global_step)
             print 'Save model at: %s' % util.curr_normal_time()
+
+            start_pred_timestamp = util.curr_timestamp_time()
+            loss, acc = sess.run([loss, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})  # cal the loss and acc
+            time_span = util.time_span(start_pred_timestamp)
+            print 'Model Ability: current - loss: %s, acc: %.8f' % (str(loss), acc)
 
         print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
         global_step.assign_add(1)
