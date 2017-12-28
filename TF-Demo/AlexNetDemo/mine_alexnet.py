@@ -173,7 +173,7 @@ with tf.Session() as sess:
     logits = alexnet(x, weights, bias, strides, keep_prob)
     # calculate loss
     # loss = tf.reduce_mean(y - pred) #TODO: you wen ti
-    loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits))  # 处理好多异常情况，比如说括号里的是ndarray
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss, global_step=global_step)
     # predict
     # show whether MAX arg index is matched
