@@ -10,6 +10,9 @@ from utils import util
 from tensorflow.examples.tutorials.mnist import input_data
 
 print 'Preparing data...'
+# 下载一直失败，查看源代码原来是access denied，利用镜像搞定
+# CVDF mirror of http://yann.lecun.com/exdb/mnist/
+# SOURCE_URL = 'https://storage.googleapis.com/cvdf-datasets/mnist/'
 mnist = input_data.read_data_sets('./data/mnist', one_hot=True)
 train = mnist.train
 valid = mnist.validation
