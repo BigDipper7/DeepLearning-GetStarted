@@ -126,8 +126,8 @@ def alexnet(X, weight, b, stride, keep_prob):
     # [None, 4, 4, 384]
     conv5 = conv2d(conv4, weight['c5'], stride['c5'], b['c5'], name='conv5')
     # [None, 4, 4, 384]
-    maxpool5 = maxpooling2d(conv5, weight['m5'], stride['m5'])
-    norm5 = norm4d(maxpool5, 5, name='norm5')
+    #maxpool5 = maxpooling2d(conv5, weight['m5'], stride['m5'])
+    norm5 = norm4d(conv5, 5, name='norm5')
     # [None, 2, 2, 256]
 
     fc1 = tf.reshape(norm5, [-1, weight['f1'].get_shape().as_list()[0]], name='reshape_to_vector')
@@ -162,11 +162,9 @@ with tf.Session() as sess:
         os.mkdir(MODEL_PATH)
         print 'mkdir {%s}' % MODEL_PATH
     global_step = tf.Variable(0, trainable=False)
-    saver = tf.train.Saver(max_to_keep=10)
     print 'prepared global_sept setting finished....'
 
-    # init = tf.global_variables_initializer()
-    init = tf.initialize_all_variables()  # 不用上面一句话的原因是会造成FailedPreconditionError，原因是没有初始化完成
+    # init = tf.initialize_all_variables()  # 不用在上面一句话的原因是会造成FailedPreconditionError，原因是没有初始化完成
     x = tf.placeholder(dtype='float32', shape=[None, n_input_size], name='oriX')
     y = tf.placeholder(dtype='float32', shape=[None, n_output_classes_size], name='oriY')
     keep_prob = tf.placeholder(dtype='float32', name='oriKeepProb')
@@ -184,9 +182,11 @@ with tf.Session() as sess:
     accuracy = tf.reduce_mean(tf.cast(corr_pred, dtype='float32'))  # Firstly, cast True/False to 1./0.; Then, calculate the mean
     # get a num of dtype=np.float32 represents the accurate
 
+    saver = tf.train.Saver(max_to_keep=10)
     print 'All Definitions are prepared....'
 
     print 'Begin to prepare initializer'
+    init = tf.global_variables_initializer()  # IMPORTENT: init要写在这里，原因是AdamOptimizer的minimize的时候会产生额外的tensor，但是你的init写的太前了，所以不管用
     sess.run(init)
     print 'Initializer preparation finished....'
     for i in range(0, iter_len):
