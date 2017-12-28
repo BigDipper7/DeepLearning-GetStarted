@@ -165,7 +165,8 @@ with tf.Session() as sess:
     saver = tf.train.Saver(max_to_keep=10)
     print 'prepared global_sept setting finished....'
 
-    init = tf.global_variables_initializer()
+    # init = tf.global_variables_initializer()
+    init = tf.initialize_all_variables()  # 不用上面一句话的原因是会造成FailedPreconditionError，原因是没有初始化完成
     x = tf.placeholder(dtype='float32', shape=[None, n_input_size], name='oriX')
     y = tf.placeholder(dtype='float32', shape=[None, n_output_classes_size], name='oriY')
     keep_prob = tf.placeholder(dtype='float32', name='oriKeepProb')
