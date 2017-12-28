@@ -84,15 +84,15 @@ strides = {
     'm5': 2,
 }
 
-bias = {                                                        # [None, 28, 28, 1]
-    'c1': tf.Variable(dtype='float32', expected_shape=[96]),    # [None, 28, 28, 96]
-    'c2': tf.Variable(dtype='float32', expected_shape=[256]),   # [None, 28, 28, 256]
-    'c3': tf.Variable(dtype='float32', expected_shape=[384]),   # [None, 14, 14, 384]
-    'c4': tf.Variable(dtype='float32', expected_shape=[384]),   # [None, 7, 7, 384]
-    'c5': tf.Variable(dtype='float32', expected_shape=[256]),   # [None, 7, 7, 256]
-    'f1': tf.Variable(dtype='float32', expected_shape=[4096]),  # [None, 4096]
-    'f2': tf.Variable(dtype='float32', expected_shape=[4096]),  # [None, 4096]
-    'out': tf.Variable(dtype='float32', expected_shape=[10]),   # [None, 10]
+bias = {                                          # [None, 28, 28, 1]
+    'c1': tf.Variable(tf.random_normal([96])),    # [None, 28, 28, 96]
+    'c2': tf.Variable(tf.random_normal([256])),   # [None, 28, 28, 256]
+    'c3': tf.Variable(tf.random_normal([384])),   # [None, 14, 14, 384]
+    'c4': tf.Variable(tf.random_normal([384])),   # [None, 7, 7, 384]
+    'c5': tf.Variable(tf.random_normal([256])),   # [None, 7, 7, 256]
+    'f1': tf.Variable(tf.random_normal([4096])),  # [None, 4096]
+    'f2': tf.Variable(tf.random_normal([4096])),  # [None, 4096]
+    'out': tf.Variable(tf.random_normal([10])),   # [None, 10]
 }
 
 
