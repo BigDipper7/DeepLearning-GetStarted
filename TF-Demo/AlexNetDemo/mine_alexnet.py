@@ -163,9 +163,10 @@ with tf.Session() as sess:
     init = tf.global_variables_initializer()
     x = tf.placeholder(dtype='float32', shape=[None, n_input_size], name='oriX')
     y = tf.placeholder(dtype='float32', shape=[None, n_output_classes_size], name='oriY')
+    keep_prob = tf.placeholder(dtype='float32', name='oriKeepProb')
 
     # define network
-    pred = alexnet(x, weights, bias, strides)
+    pred = alexnet(x, weights, bias, strides, keep_prob)
     # calculate loss
     loss = tf.reduce_mean(y - pred)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss, global_step=global_step)
@@ -182,7 +183,8 @@ with tf.Session() as sess:
         if x == 0:
             print "SHAPE: batch_x %s, batch_y %s" % (batch_x.shape, batch_y.shape)
 
-        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y})
+        # training...
+        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: dropout})
 
         if global_step.eval() % MODEL_SAVE_SPAN == 0:
             saver.save(sess, MODEL_PATH, global_step)
