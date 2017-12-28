@@ -189,6 +189,10 @@ with tf.Session() as sess:
     init = tf.global_variables_initializer()  # IMPORTENT: init要写在这里，原因是AdamOptimizer的minimize的时候会产生额外的tensor，但是你的init写的太前了，所以不管用
     sess.run(init)
     print 'Initializer preparation finished....'
+
+    print ' ============================================== '
+    print ' =               begin training               = '
+    print ' ============================================== '
     for i in range(0, iter_len):
         before = util.curr_timestamp_time()
 
@@ -209,6 +213,6 @@ with tf.Session() as sess:
             time_span = util.time_span(start_pred_timestamp)
             print 'Model Ability: current - loss: %s, acc: %.8f' % (str(loss), acc)
 
-        print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
+        # print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
         global_step.assign_add(1)
 
