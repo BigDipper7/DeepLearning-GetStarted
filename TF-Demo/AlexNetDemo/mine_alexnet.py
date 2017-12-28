@@ -9,10 +9,12 @@ from utils import util
 # prepare data
 from tensorflow.examples.tutorials.mnist import input_data
 
+print 'Preparing data...'
 mnist = input_data.read_data_sets('./data/mnist', one_hot=True)
 train = mnist.train
 valid = mnist.validation
 test = mnist.test
+print 'Data prepared...'
 
 # define hyper-params for network
 learning_rate = 0.001
