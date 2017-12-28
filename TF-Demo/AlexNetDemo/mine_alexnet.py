@@ -211,7 +211,8 @@ with tf.Session() as sess:
             start_pred_timestamp = util.curr_timestamp_time()
             los, acc = sess.run([loss, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})  # cal the loss and acc
             time_span = util.time_span(start_pred_timestamp)
-            print 'Model Ability: current - loss: %s, acc: %.8f' % (los, acc)
+            avg_los = sess.run(tf.reduce_mean(los))
+            print 'Model Ability: current - total loss: %s,\n -- avg_loss: %s, acc: %.8f' % (los, avg_los, acc)
 
         # print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
         global_step.assign_add(1)
