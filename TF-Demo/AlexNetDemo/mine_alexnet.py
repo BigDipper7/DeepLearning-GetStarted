@@ -4,6 +4,7 @@
 # Created on 15/12/2017
 
 import tensorflow as tf
+from utils import util
 
 # prepare data
 from tensorflow.examples.tutorials.mnist import input_data
@@ -25,6 +26,7 @@ n_output_classes_size = 10
 
 # define global params
 MODEL_PATH = './models'
+MODEL_SAVE_SPAN = 100
 
 
 # define tf graph func
@@ -90,60 +92,60 @@ bias = {                                                        # [None, 28, 28,
 
 
 # define network
-def alexnet(X, weights, bias, strides):
+def alexnet(X, weight, b, stride, keep_prob):
     X = tf.reshape(X, [-1, 28, 28, 1], name='inputX')
     # [None, 28, 28, 1]
 
-    conv1 = conv2d(X, weights['c1'], strides['c1'], bias['c1'], name='conv1')
+    conv1 = conv2d(X, weight['c1'], stride['c1'], b['c1'], name='conv1')
     # [None, 28, 28, 96]
-    maxpool1 = maxpooling2d(conv1, weights['m1'], strides['m1'], name='maxpool1')
+    maxpool1 = maxpooling2d(conv1, weight['m1'], stride['m1'], name='maxpool1')
     # [None, 14, 14, 96]
     norm1 = norm4d(maxpool1, 5, name='norm1')
     # [None, 14, 14, 96]
 
-    conv2 = conv2d(norm1, weights['c2'], strides['c2'], bias['c2'], name='conv2')
+    conv2 = conv2d(norm1, weight['c2'], stride['c2'], b['c2'], name='conv2')
     # [None, 14, 14, 256]
-    maxpool2 = maxpooling2d(conv2, weights['m2'], strides['m2'], name='maxpool2')
+    maxpool2 = maxpooling2d(conv2, weight['m2'], stride['m2'], name='maxpool2')
     # [None, 7, 7, 256]
     norm2 = norm4d(maxpool2, 5, name='norm2')
     # [None, 7, 7, 256]
 
-    conv3 = conv2d(norm2, weights['c3'], strides['c3'], bias['c3'], name='conv3')
+    conv3 = conv2d(norm2, weight['c3'], stride['c3'], b['c3'], name='conv3')
     # [None, 7, 7, 384]
-    maxpool3 = maxpooling2d(conv3, weights['m3'], stride=strides['m3'], name='maxpool3')
+    maxpool3 = maxpooling2d(conv3, weight['m3'], stride=stride['m3'], name='maxpool3')
     # [None, 4, 4, 384]
     norm3 = norm4d(maxpool3, 5, name='norm3')
     # [None, 4, 4, 384]
 
-    conv4 = conv2d(norm3, weights['c4'], strides['c4'], bias['c4'], name='conv4')
+    conv4 = conv2d(norm3, weight['c4'], stride['c4'], b['c4'], name='conv4')
     # [None, 4, 4, 384]
-    conv5 = conv2d(conv4, weights['c5'], strides['c5'], bias['c5'], name='conv5')
+    conv5 = conv2d(conv4, weight['c5'], stride['c5'], b['c5'], name='conv5')
     # [None, 4, 4, 384]
-    maxpool5 = maxpooling2d(conv5, weights['m5'], strides['m5'])
+    maxpool5 = maxpooling2d(conv5, weight['m5'], stride['m5'])
     norm5 = norm4d(maxpool5, 5, name='norm5')
     # [None, 2, 2, 256]
 
-    fc1 = tf.reshape(norm5, [-1, weights['f1'].get_shape().as_list()[0]], name='reshape_to_vector')
+    fc1 = tf.reshape(norm5, [-1, weight['f1'].get_shape().as_list()[0]], name='reshape_to_vector')
     # [None, 4 * 4 * 256]
-    fc1 = tf.matmul(fc1, weights['f1'])
+    fc1 = tf.matmul(fc1, weight['f1'])
     # [None, 4096]
-    fc1 = tf.nn.bias_add(fc1, bias['f1'])
+    fc1 = tf.nn.bias_add(fc1, b['f1'])
     fc1 = tf.nn.relu(fc1, name='relu_fc1')
     # [None, 4096]
 
     # dropout
-    drop1 = tf.nn.dropout(fc1, keep_prob=dropout)
+    drop1 = tf.nn.dropout(fc1, keep_prob=keep_prob)
     # [None, 4096]
 
-    fc2 = tf.nn.bias_add(tf.matmul(tf.reshape(drop1, [-1, weights['f2'].get_shape().as_list()[0]]), weights['f2']), bias['f2'])
+    fc2 = tf.nn.bias_add(tf.matmul(tf.reshape(drop1, [-1, weight['f2'].get_shape().as_list()[0]]), weight['f2']), b['f2'])
     fc2 = tf.nn.relu(fc2)
     # [None, 4096]
 
     # dropout
-    drop2 = tf.nn.dropout(fc2, keep_prob=dropout)
+    drop2 = tf.nn.dropout(fc2, keep_prob=keep_prob)
     # [None, 4096]
 
-    out = tf.nn.bias_add(tf.matmul(drop2, weights['f2']), bias['out'])
+    out = tf.nn.bias_add(tf.matmul(drop2, weight['f2']), b['out'])
     # [None, 10]
 
     return out
@@ -174,3 +176,18 @@ with tf.Session() as sess:
     sess.run(init)
     print 'Initializer preparation finished....'
     for x in range(0, iter_len):
+        before = util.curr_timestamp_time()
+
+        batch_x, batch_y = train.next_batch(batch_size=batch_size)
+        if x == 0:
+            print "SHAPE: batch_x %s, batch_y %s" % (batch_x.shape, batch_y.shape)
+
+        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y})
+
+        if global_step.eval() % MODEL_SAVE_SPAN == 0:
+            saver.save(sess, MODEL_PATH, global_step)
+            print 'Save model at: %s' % util.curr_normal_time()
+
+        print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
+        global_step.assign_add(1)
+
