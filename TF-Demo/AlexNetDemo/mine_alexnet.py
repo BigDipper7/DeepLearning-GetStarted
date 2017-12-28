@@ -150,7 +150,7 @@ def alexnet(X, weight, b, stride, keep_prob):
     drop2 = tf.nn.dropout(fc2, keep_prob=keep_prob)
     # [None, 4096]
 
-    out = tf.nn.bias_add(tf.matmul(drop2, weight['f2']), b['out'])
+    out = tf.nn.bias_add(tf.matmul(drop2, weight['out']), b['out'])
     # [None, 10]
 
     return out
