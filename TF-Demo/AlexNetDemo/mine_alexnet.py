@@ -188,11 +188,11 @@ with tf.Session() as sess:
     print 'Begin to prepare initializer'
     sess.run(init)
     print 'Initializer preparation finished....'
-    for x in range(0, iter_len):
+    for i in range(0, iter_len):
         before = util.curr_timestamp_time()
 
         batch_x, batch_y = train.next_batch(batch_size=batch_size)
-        if x == 0:
+        if i == 0:
             print "SHAPE: batch_x %s, batch_y %s" % (batch_x.shape, batch_y.shape)
 
         # training...
