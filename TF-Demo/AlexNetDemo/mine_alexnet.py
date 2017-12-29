@@ -168,6 +168,8 @@ with tf.Session() as sess:
     x = tf.placeholder(dtype='float32', shape=[None, n_input_size], name='oriX')
     y = tf.placeholder(dtype='float32', shape=[None, n_output_classes_size], name='oriY')
     keep_prob = tf.placeholder(dtype='float32', name='oriKeepProb')
+    batch_x = []  # to access out of the loop
+    batch_y = []
 
     # define network
     logits = alexnet(x, weights, bias, strides, keep_prob)
@@ -193,11 +195,11 @@ with tf.Session() as sess:
     print ' ============================================== '
     print ' =               begin training               = '
     print ' ============================================== '
-    for i in range(0, iter_len):
+    while global_step.eval() * batch_size < iter_len:
         before = util.curr_timestamp_time()
 
         batch_x, batch_y = train.next_batch(batch_size=batch_size)
-        if i == 0:
+        if global_step.eval() == 0:
             print "SHAPE: batch_x %s, batch_y %s" % (batch_x.shape, batch_y.shape)
 
         # training...
@@ -216,4 +218,19 @@ with tf.Session() as sess:
 
         # print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
         global_step.assign_add(1)
+
+    print ' ============================================== '
+    print ' =               Finished Training            = '
+    print ' ============================================== '
+
+    print ' ============================================== '
+    print ' =               begin validating             = '
+    print ' ============================================== '
+
+    start_pred_timestamp = util.curr_timestamp_time()
+    los, acc = sess.run([loss, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
+    span = util.time_span(start_pred_timestamp)
+
+    avg_los = sess.run(tf.reduce_mean(los))
+    print 'Model Ability: current - total loss: %s,\n -- avg_loss: %s, acc: %.8f, time: %.5fS' % (los, avg_los, acc, span)
 
