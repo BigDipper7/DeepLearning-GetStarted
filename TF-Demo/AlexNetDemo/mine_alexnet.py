@@ -205,7 +205,7 @@ with tf.Session() as sess:
         print 'Train Step: %d optimized, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
 
         if global_step.eval() % MODEL_SAVE_SPAN == 0:
-            saver.save(sess, MODEL_PATH, global_step)
+            saver.save(sess, MODEL_PATH+'/model.ckpt', global_step)  # need to change it to the prefix of model
             print 'Save model at: %s' % util.curr_normal_time()
 
             start_pred_timestamp = util.curr_timestamp_time()
