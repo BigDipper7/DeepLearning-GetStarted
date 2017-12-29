@@ -21,7 +21,7 @@ print 'Data prepared...'
 
 # define hyper-params for network
 learning_rate = 0.001
-iter_len = 20000
+iter_len = 200000
 batch_size = 128
 dropout = 0.75
 
@@ -176,7 +176,7 @@ with tf.Session() as sess:
     # calculate loss
     # loss = tf.reduce_mean(y - pred) #TODO: you wen ti
     loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)  # 处理好多异常情况，比如说括号里的是ndarray
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(tf.reduce_mean(loss), global_step=global_step)
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss, global_step=global_step)
     # predict
     # show whether MAX arg index is matched
     corr_pred = tf.equal(tf.arg_max(logits, 1), tf.arg_max(y, 1))  # arg_max return index!
