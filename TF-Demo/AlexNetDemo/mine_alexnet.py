@@ -238,7 +238,7 @@ with tf.Session() as sess:
     print ' =               begin testing                = '
     print ' ============================================== '
     start_pred_timestamp = util.curr_timestamp_time()
-    los, acc = sess.run([loss, accuracy], feed_dict={x: test[:256], y: test[:256], keep_prob: 1.})
+    los, acc = sess.run([loss, accuracy], feed_dict={x: test.images[:512], y: test.labels[:512], keep_prob: 1.})
     span = util.time_span(start_pred_timestamp)
 
     avg_los = tf.reduce_mean(los)
