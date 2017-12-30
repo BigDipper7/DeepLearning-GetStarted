@@ -241,6 +241,6 @@ with tf.Session() as sess:
     los, acc = sess.run([loss, accuracy], feed_dict={x: test.images[:512], y: test.labels[:512], keep_prob: 1.})
     span = util.time_span(start_pred_timestamp)
 
-    avg_los = tf.reduce_mean(los)
+    avg_los = str(tf.reduce_mean(los))
     print 'Testing: Model Performance: current - total loss: %s,\n -- avg_loss: %s, acc: %.8f, time: %.5fS' % (los, avg_los, acc, span)
 
