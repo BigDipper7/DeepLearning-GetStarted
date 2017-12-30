@@ -234,3 +234,13 @@ with tf.Session() as sess:
     avg_los = sess.run(tf.reduce_mean(los))
     print 'Model Ability: current - total loss: %s,\n -- avg_loss: %s, acc: %.8f, time: %.5fS' % (los, avg_los, acc, span)
 
+    print ' ============================================== '
+    print ' =               begin testing                = '
+    print ' ============================================== '
+    start_pred_timestamp = util.curr_timestamp_time()
+    los, acc = sess.run([loss, accuracy], feed_dict={x: test[:256], y: test[:256], keep_prob: 1.})
+    span = util.time_span(start_pred_timestamp)
+
+    avg_los = tf.reduce_mean(los)
+    print 'Testing: Model Performance: current - total loss: %s,\n -- avg_loss: %s, acc: %.8f, time: %.5fS' % (los, avg_los, acc, span)
+
