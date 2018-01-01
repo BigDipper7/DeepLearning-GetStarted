@@ -217,7 +217,7 @@ with tf.Session() as sess:
             print 'Model Ability: current - total loss: %s,\n -- avg_loss: %s, acc: %.8f' % (los, avg_los, acc)
 
         # print 'Step: %d finished, cost %.3fS. ' % (global_step.eval(), util.time_span(before))
-        global_step.assign_add(1)
+        # global_step.assign_add(1) # 这句话去掉，第一是根本就没运行，第二是因为你前面设定过了global step所以完全不用管这个就好了
 
     print ' ============================================== '
     print ' =               Finished Training            = '
