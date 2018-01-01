@@ -62,7 +62,7 @@ with tf.Session() as sess:
     # Train
     logits = networks(x, weights, bias)
     loss = tf.reduce_mean(tf.reduce_sum(tf.square(y-logits), axis=1))
-    optimizer = tf.train.AdamOptimizer(learning_rate=0.005).minimize(loss)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.005).minimize(loss, global_step=global_step)
 
     # Test
     test = networks(x, weights, bias)
@@ -75,7 +75,8 @@ with tf.Session() as sess:
     while global_step.eval() < iter_size:
         sess.run(optimizer, feed_dict={x: all_data['X'], y: all_data['Y']})
 
-        global_step.assign_add(1)
+        # sess.run(global_step.assign_add(1)) # 这句话就不用了，因为你前面在损失函数的时候设定过global_step了
+        # print global_step.eval()
 
         if global_step.eval() % 50 == 0:
             start = util.curr_timestamp_time()
