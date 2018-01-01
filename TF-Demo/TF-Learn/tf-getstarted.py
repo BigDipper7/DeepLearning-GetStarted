@@ -79,14 +79,14 @@ with tf.Session() as sess:
 
         if global_step.eval() % 50 == 0:
             start = util.curr_timestamp_time()
-            los = sess.run(loss)
+            los = sess.run(loss, feed_dict={x: all_data['X'], y: all_data['Y']})
             time_span = util.time_span(start)
             print 'current loss: %.5f, cost time: %.5f' % (los, time_span)
 
     print 'Finished !'
 
     start = util.curr_timestamp_time()
-    los = sess.run(loss)
+    los = sess.run(loss, feed_dict={x: all_data['X'], y: all_data['Y']})
     time_span = util.time_span(start)
     print 'FINAL *** loss: %.5f, cost time: %.5f' % (los, time_span)
 
