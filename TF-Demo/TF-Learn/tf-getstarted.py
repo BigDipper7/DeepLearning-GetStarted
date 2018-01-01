@@ -20,8 +20,8 @@ assert X_real.shape == X_noise.shape
 # y = x^2 - 0.5
 Y_real = X_real ** 2 - 0.5 + X_noise
 
-x = tf.placeholder(dtype=tf.float32, shape=[NUM_X_SIZE, 1], name='inputX')
-y = tf.placeholder(dtype=tf.float32, shape=[NUM_X_SIZE, 1], name='outputY')
+x = tf.placeholder(dtype=tf.float32, shape=[None, 1], name='inputX')
+y = tf.placeholder(dtype=tf.float32, shape=[None, 1], name='outputY')
 batch_size = 30
 iter_size = 2000
 
