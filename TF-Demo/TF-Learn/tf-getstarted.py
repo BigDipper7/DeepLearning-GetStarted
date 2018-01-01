@@ -68,6 +68,9 @@ with tf.Session() as sess:
     test = networks(x, weights, bias)
     # accuracy = tf.
 
+    # Saver
+    saver = tf.train.Saver()
+
     # initializer
     init = tf.global_variables_initializer()
     sess.run(init)
@@ -90,6 +93,11 @@ with tf.Session() as sess:
     los = sess.run(loss, feed_dict={x: all_data['X'], y: all_data['Y']})
     time_span = util.time_span(start)
     print 'FINAL *** loss: %.5f, cost time: %.5f' % (los, time_span)
+
+    import os
+    if not os.path.exists('./save'):
+        os.mkdir('./save')
+    saver.save(sess, './save'+'/model.ckpt', global_step=global_step)
 
 
 
