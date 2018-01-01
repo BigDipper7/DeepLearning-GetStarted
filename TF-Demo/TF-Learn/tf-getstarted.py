@@ -6,6 +6,9 @@
 import tensorflow as tf
 import numpy as np
 
+from utils import util
+
+
 NUM_X_SIZE = 300
 
 X_real = np.linspace(-1, 1, num=NUM_X_SIZE)[:, np.newaxis]
@@ -71,11 +74,21 @@ with tf.Session() as sess:
 
     while global_step.eval() < iter_size:
         sess.run(optimizer, feed_dict={x: all_data['X'], y: all_data['Y']})
+
         global_step.assign_add(1)
 
         if global_step.eval() % 50 == 0:
-            sess.run(loss)
-            print 'current loss'
+            start = util.curr_timestamp_time()
+            los = sess.run(loss)
+            time_span = util.time_span(start)
+            print 'current loss: %.5f, cost time: %.5f' % (los, time_span)
+
+    print 'Finished !'
+
+    start = util.curr_timestamp_time()
+    los = sess.run(loss)
+    time_span = util.time_span(start)
+    print 'FINAL *** loss: %.5f, cost time: %.5f' % (los, time_span)
 
 
 
