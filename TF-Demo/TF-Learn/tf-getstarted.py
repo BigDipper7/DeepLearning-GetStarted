@@ -57,7 +57,7 @@ def networks(X, weights, bias):
 
 
 with tf.Session() as sess:
-    global_step = tf.Variable(0, trainable=False)
+    global_step = tf.Variable(0, trainable=False, dtype=tf.int32)
 
     # Train
     logits = networks(x, weights, bias)
@@ -81,7 +81,7 @@ with tf.Session() as sess:
             start = util.curr_timestamp_time()
             los = sess.run(loss, feed_dict={x: all_data['X'], y: all_data['Y']})
             time_span = util.time_span(start)
-            print 'current loss: %.5f, cost time: %.5f' % (los, time_span)
+            print '[%d] ** current cost time: %.5f, loss: %.5f' % (global_step.eval(), time_span, los)
 
     print 'Finished !'
 
