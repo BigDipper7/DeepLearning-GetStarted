@@ -80,7 +80,8 @@ def get_pair(path, set, num_id, positive):
     :param set: "val" or "train" | dataset name
     :param num_id: whole entity number, using to generate randomly id of the pair
     :param positive: "True" or "False", if is positive image pair
-    :return: a pair of image file path
+    :return: a pair of image file path,
+            [file_path_1, file_path_2]
     """
     pair = []
     if positive:
@@ -143,6 +144,13 @@ def read_data(path, set, num_id, image_width, image_height, batch_size):
             ...
         ]
         size: 2 * ([:param batch_size] // 2)
+
+        after transpose(1,0,2,3,4) result will be:
+        [
+            [positive_rgb_img_a_tensor_1, negative_rgb_img_b_tensor_1, positive_rgb_img_d_tensor_1, negative_rgb_img_e_tensor_1, ...],
+            [positive_rgb_img_a_tensor_2, negative_rgb_img_c_tensor_2, positive_rgb_img_d_tensor_2, negative_rgb_img_f_tensor_2, ...]
+        ]
+        shape: (2, batch_size, img_rows, img_cols, rgb_channels)
 
         2: training or validating image label list:
         [
