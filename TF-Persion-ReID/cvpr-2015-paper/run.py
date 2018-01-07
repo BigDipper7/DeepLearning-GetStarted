@@ -77,17 +77,19 @@ def network(images1, images2, weight_decay):
         reshape = tf.reshape(trans, [1, shape[0], shape[1], shape[2], shape[3]])  # reshape:(1, b, c, h, w)
         g = []
         pad = tf.pad(reshape, [[0, 0], [0, 0], [0, 0], [2, 2], [2, 2]])  # pad:(1, b, c, h+4, w+4)
-        for i in xrange(shape[2]):
-            for j in xrange(shape[3]):
-                g.append(pad[:,:,:,i:i+5,j:j+5])
+        for i in xrange(shape[2]):  # h
+            for j in xrange(shape[3]):  # w
+                g.append(pad[:,:,:,i:i+5,j:j+5])  # g:(1, b, c, 5, 5)
+                # like a 5x5 convolution window slide from begin to end
 
-        concat = tf.concat(g, axis=0)
-        reshape = tf.reshape(concat, [shape[2], shape[3], shape[0], shape[1], 5, 5])
-        g = tf.transpose(reshape, [2, 3, 0, 1, 4, 5])
-        reshape1 = tf.reshape(tf.subtract(f, g), [shape[0], shape[1], shape[2] * 5, shape[3] * 5])
-        reshape2 = tf.reshape(tf.subtract(g, f), [shape[0], shape[1], shape[2] * 5, shape[3] * 5])
-        k1 = tf.nn.relu(tf.transpose(reshape1, [0, 2, 3, 1]), name='k1')
-        k2 = tf.nn.relu(tf.transpose(reshape2, [0, 2, 3, 1]), name='k2')
+        concat = tf.concat(g, axis=0)  # concat:(h*w, b, c, 5, 5)
+        # shape:[b, c, h, w]
+        reshape = tf.reshape(concat, [shape[2], shape[3], shape[0], shape[1], 5, 5])  # reshape:(h, w, b, c, 5, 5)
+        g = tf.transpose(reshape, [2, 3, 0, 1, 4, 5])  # g:(b, c, h, w, 5, 5)
+        reshape1 = tf.reshape(tf.subtract(f, g), [shape[0], shape[1], shape[2] * 5, shape[3] * 5])  # (b, c, h*5, w*5)
+        reshape2 = tf.reshape(tf.subtract(g, f), [shape[0], shape[1], shape[2] * 5, shape[3] * 5])  # (b, c, h*5, w*5)
+        k1 = tf.nn.relu(tf.transpose(reshape1, [0, 2, 3, 1]), name='k1')  # (b, h*5, w*5, c)
+        k2 = tf.nn.relu(tf.transpose(reshape2, [0, 2, 3, 1]), name='k2')  # (b, h*5, w*5, c)
 
         # Patch Summary Features
         l1 = tf.layers.conv2d(k1, 25, [5, 5], (5, 5), activation=tf.nn.relu,
