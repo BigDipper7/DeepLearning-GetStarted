@@ -93,9 +93,9 @@ def network(images1, images2, weight_decay):
 
         # Patch Summary Features
         l1 = tf.layers.conv2d(k1, 25, [5, 5], (5, 5), activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l1')
+            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l1')  # (b, h, w, 25*c)
         l2 = tf.layers.conv2d(k2, 25, [5, 5], (5, 5), activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l2')
+            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l2')  # (b, h, w, 25*c)
 
         # Across-Patch Features
         m1 = tf.layers.conv2d(l1, 25, [3, 3], activation=tf.nn.relu,
