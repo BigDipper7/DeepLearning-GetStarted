@@ -14,6 +14,7 @@ class Yggdrasil:
     in_tunnel = 3
     batch_size = 32
     keep_prob = 0.5
+    epoch = 30
 
     def __init__(self, n_class):
         self.n_class = n_class
