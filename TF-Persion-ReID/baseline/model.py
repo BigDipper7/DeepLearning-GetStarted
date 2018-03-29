@@ -4,7 +4,6 @@
 # Created on 27/03/2018]
 
 import tensorflow as tf
-import os
 # from keras import backend as K
 # from keras.applications.resnet50 import ResNet50
 
@@ -39,26 +38,3 @@ class Yggdrasil:
         logits = tf.layers.dense(dropout1, units=self.n_class, activation=None, use_bias=True)
 
         return logits
-
-    def get_data_list(self, root_pth):
-        _dataset_train = {'images':[], 'labels':[]}
-
-        train_pth = os.path.join(root_pth, "bounding_box_train")
-        # val_pth = os.path.join(root_pth, "val")
-        test_pth = os.path.join(root_pth, "bounding_box_test")
-
-        for root, dirs, files in os.walk(train_pth, topdown=True):
-            print(root)
-            print(dirs)
-            print(files)
-            for file_name in files:
-                if not file_name[-4:] == '.jpg':
-                    continue
-                fsplits = file_name.split('_')
-                tmp_label = fsplits[0]
-                _dataset_train['images'].append(os.path.join(root, file_name))
-                _dataset_train['labels'].append(os.path.join(tmp_label))
-
-        return _dataset_train
-
-
