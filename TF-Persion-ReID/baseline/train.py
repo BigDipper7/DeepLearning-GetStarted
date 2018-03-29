@@ -9,12 +9,49 @@ import numpy as np
 
 from model import Yggdrasil
 from utils.util import curr_normal_time
+from utils.datasets import get_data_list
+from utils.const import DS_ROOT_PTH
 
 # define super-params
-n_classes = 1000
 
+# get train dataset paths and labels
+dict_plain_ds_train = get_data_list(DS_ROOT_PTH)
+# print(datasets_train)
+all_labels = dict_plain_ds_train['labels']
+x = reduce(lambda x, y: x+([y] if y not in x else []), all_labels, [])
+n_classes = len(x)
+print("Have n_classes: %d !" % n_classes)
 
+# define module of entrance
 yggdrasil = Yggdrasil(n_class=n_classes)
+
+
+def _parser_ds(dict_ds_item):
+    # print(dict_ds_item)
+    t_image = dict_ds_item['images']
+    t_label = dict_ds_item['labels']
+    t_img_str = tf.read_file(t_image)
+    t_img_decoded = tf.image.decode_jpeg(t_img_str)
+    t_img_resized = tf.image.resize_image_with_crop_or_pad(t_img_decoded, target_height=128, target_width=64)
+    print(t_img_resized)
+    return {'image': t_img_resized, 'label': t_label}  # 注意这里我更改了没一个维度的变量的key的内容
+
+
+# define datasets
+ds_train = tf.data.Dataset.from_tensor_slices(dict_plain_ds_train)
+ds_train = ds_train.map(_parser_ds)
+ds_train = ds_train.shuffle(buffer_size=1024, reshuffle_each_iteration=True)\
+    .batch(Yggdrasil.batch_size)\
+    .repeat(Yggdrasil.epoch)
+
+
+iterator = ds_train.make_one_shot_iterator()
+
+# with tf.Session() as sess:
+#     print sess.run(iterator.get_next())
+
+
+# exit(-1)
 
 
 with tf.Session() as sess:
