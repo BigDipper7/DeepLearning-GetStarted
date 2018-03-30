@@ -21,7 +21,7 @@ class Yggdrasil:
 
     def model(self, X):
 
-        resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X, input_shape=(None, self.in_height, self.in_width, self.in_channal))
+        resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X)
         print(resnet50.shape)
 
         avg_pool = tf.nn.avg_pool(resnet50, ksize=[1, 1, 1, 1], strides=[1, 2, 2, 1], padding='SAME')
