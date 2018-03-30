@@ -14,9 +14,9 @@ def get_data_list(root_pth):
     test_pth = os.path.join(root_pth, "bounding_box_test")
 
     for root, dirs, files in os.walk(train_pth, topdown=True):
-        print(root)
-        print(dirs)
-        print(files)
+        # print(root)
+        # print(dirs)
+        # print(files)
         for file_name in files:
             if not file_name[-4:] == '.jpg':
                 continue

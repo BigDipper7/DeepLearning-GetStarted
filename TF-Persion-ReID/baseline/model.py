@@ -11,7 +11,7 @@ import tensorflow as tf
 class Yggdrasil:
     in_width = 80
     in_height = 180
-    in_channal = 3
+    in_channel = 3
     batch_size = 32
     keep_prob = 0.5
     epoch = 30
