@@ -48,9 +48,11 @@ ds_train = ds_train.shuffle(buffer_size=1024, reshuffle_each_iteration=True)\
 iterator = ds_train.make_one_shot_iterator()
 
 # with tf.Session() as sess:
-#     print sess.run(iterator.get_next())
-
-
+#     m = sess.run(iterator.get_next())
+#     print(m)
+#     print(m['image'].shape)
+#
+#
 # exit(-1)
 
 
@@ -77,7 +79,8 @@ with tf.Session() as sess:
 
     print("======== Training Begin ========")
     while global_step.eval() < Yggdrasil.epoch:
-        _, cal_loss = sess.run([optimizer, loss], feed_dict={X: None, Y: None})
+        tmp_recode = sess.run(iterator.get_next())
+        _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
         print("%s : epoch: [%d] with loss [%.8f]" % (curr_normal_time(), global_step.eval(), cal_loss))
 
     print("======== Training Finished ========")
