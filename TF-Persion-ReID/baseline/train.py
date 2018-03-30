@@ -60,7 +60,7 @@ with tf.Session() as sess:
 
     global_step = tf.Variable(0, trainable=False)
 
-    X = tf.placeholder(tf.float32, shape=(None, Yggdrasil.in_height, Yggdrasil.in_width, Yggdrasil.in_tunnel))
+    X = tf.placeholder(tf.float32, shape=(None, Yggdrasil.in_height, Yggdrasil.in_width, Yggdrasil.in_channal))
     Y = tf.placeholder(tf.float32, shape=(None, yggdrasil.n_class))
 
     logits = yggdrasil.model(X)
