@@ -13,7 +13,8 @@ with tf.Session() as sess:
 
     X = tf.placeholder(dtype=tf.float32, shape=(None, 197,197,3)) # 注意最小的input shape 不能小于197
     resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X)
-    m = tf.layers.flatten(resnet50)
+    m = tf.layers.flatten(resnet50.output)
+    print(resnet50.output.shape)
 
-    m = sess.run(m, feed_dict={X: np.random.random((77, 224, 224, 3))})
+    m = sess.run(m, feed_dict={X: np.random.random((77, 197, 197, 3))})
     print(m.shape)
