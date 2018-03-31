@@ -46,7 +46,7 @@ dict_plain_ds_test['labels'] = map(lambda _T: x_test.index(_T), dict_plain_ds_te
 print(dict_plain_ds_test['labels'])
 dict_plain_ds_test['labels'] = tf.keras.utils.to_categorical(dict_plain_ds_test['labels'], num_classes=n_classes_test)
 print(dict_plain_ds_test['labels'])
-exit(-1)
+# exit(-1)
 
 # define module of entrance
 yggdrasil = Yggdrasil(n_class=n_classes, n_dataset_len=n_dataset_len)
@@ -77,8 +77,12 @@ ds_train = ds_train.shuffle(buffer_size=1024, reshuffle_each_iteration=True)\
     .batch(Yggdrasil.batch_size)\
     .repeat(Yggdrasil.epoch)
 
+ds_test = tf.data.Dataset.from_tensor_slices(dict_plain_ds_test)
+ds_test = ds_test.map(_parser_ds)
+
 
 iterator = ds_train.make_one_shot_iterator()
+iterator_test = ds_test.make_one_shot_iterator()
 
 # with tf.Session() as sess:
 #     m = sess.run(iterator.get_next())
