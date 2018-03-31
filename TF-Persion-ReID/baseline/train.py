@@ -6,14 +6,17 @@
 import tensorflow as tf
 from keras import backend as K
 import numpy as np
+import os
 
 from model import Yggdrasil
 from utils.util import curr_normal_time
 from utils.datasets import get_data_list
-from utils.const import DS_ROOT_PTH
+from utils.const import DS_ROOT_PTH, LOG_DIR
 
 # define super-params
 
+if not os.path.exists(LOG_DIR):
+    os.mkdir(LOG_DIR)
 
 dict_plain_ds_train, dict_plain_ds_test = get_data_list(DS_ROOT_PTH)
 
@@ -115,11 +118,18 @@ with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
 
+    saver = tf.train.Saver()
+    ckpt = tf.train.get_checkpoint_state(LOG_DIR)
+    if ckpt and ckpt.model_checkpoint_path:
+        print('Restore model')
+        saver.restore(sess, ckpt.model_checkpoint_path)
+
     print("======== Training Begin ========")
     while global_step.eval() * Yggdrasil.batch_size < Yggdrasil.epoch * Yggdrasil.n_dataset_len:
         tmp_recode = sess.run(iterator.get_next())
         _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
-        if global_step.eval() % 100:
+        if global_step.eval() % 1 == 0:
+            saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+global_step.eval()))
             print("%s : epoch:[%d] - step:[%d] | with loss [%.8f]" %
                   (curr_normal_time(), (global_step.eval()*Yggdrasil.batch_size/Yggdrasil.n_dataset_len),
                    global_step.eval(), cal_loss))
