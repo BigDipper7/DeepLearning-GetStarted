@@ -79,13 +79,14 @@ ds_train = ds_train.shuffle(buffer_size=1024, reshuffle_each_iteration=True)\
 
 ds_test = tf.data.Dataset.from_tensor_slices(dict_plain_ds_test)
 ds_test = ds_test.map(_parser_ds)
+ds_test = ds_test.batch(n_test_len)
 
 
 iterator = ds_train.make_one_shot_iterator()
 iterator_test = ds_test.make_one_shot_iterator()
 
 # with tf.Session() as sess:
-#     m = sess.run(iterator.get_next())
+#     m = sess.run(iterator_test.get_next())
 #     print(m)
 #     print(m['image'].shape)
 #
@@ -126,8 +127,10 @@ with tf.Session() as sess:
     print("======== Training Finished ========")
 
     print("======== Testing Begin ========")
-    test_X = None
-    test_Y = None
+    tmp_test_record = sess.run(iterator_test.get_next())
+    test_X = tmp_test_record['image']
+    test_Y = tmp_test_record['label']
+    print("load test data input X with shape: "+test_X.shape)
     prediction = sess.run([inference], feed_dict={X: test_X})
     predict_label = np.argmax(prediction, axis=-1)
     ground_truth_label = np.argmax(test_Y, axis=-1)
@@ -137,7 +140,7 @@ with tf.Session() as sess:
         if predict_label[i] == ground_truth_label[i]:
             correct_num += 1
             print(i)
-    print("Acc: %.3f" % (float(correct_num)/total_num))
+    print("Acc: %.7f" % (float(correct_num)/total_num))
 
 
 
