@@ -9,7 +9,7 @@ import tensorflow as tf
 
 
 class Yggdrasil:
-    in_width = 128
+    in_width = 197
     in_height = 256
     in_channel = 3
     batch_size = 32
@@ -23,7 +23,7 @@ class Yggdrasil:
 
         resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X, pooling=None)
         print("==== Shape : ====")
-        print(resnet50.shape)
+        print(resnet50.output_shape)
         print("==== Shape +++ ====")
 
         avg_pool = tf.nn.avg_pool(resnet50, ksize=[1, 1, 1, 1], strides=[1, 2, 2, 1], padding='SAME')
