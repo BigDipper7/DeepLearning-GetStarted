@@ -32,6 +32,9 @@ def get_data_list(root_pth):
                 continue
             fsplits = file_name.split('_')
             tmp_label = fsplits[0]
+            if tmp_label == '-1':
+                # 暂时去掉-1的 保证751类
+                continue
             _dataset_test['images'].append(os.path.join(root, file_name))
             _dataset_test['labels'].append(int(tmp_label))  # 强行增加了一个label的数字化的代码
 
