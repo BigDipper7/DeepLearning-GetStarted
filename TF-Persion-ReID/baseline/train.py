@@ -18,6 +18,7 @@ from utils.const import DS_ROOT_PTH
 dict_plain_ds_train = get_data_list(DS_ROOT_PTH)
 # print(datasets_train)
 all_labels = dict_plain_ds_train['labels']
+n_dataset_len = len(all_labels)
 x = reduce(lambda x, y: x+([y] if y not in x else []), all_labels, [])
 n_classes = len(x)
 print("Have n_classes: %d !" % n_classes)
@@ -30,7 +31,7 @@ print(dict_plain_ds_train['labels'])
 # exit(-1)
 
 # define module of entrance
-yggdrasil = Yggdrasil(n_class=n_classes)
+yggdrasil = Yggdrasil(n_class=n_classes, n_dataset_len=n_dataset_len)
 
 
 def _parser_ds(dict_ds_item):
@@ -92,10 +93,13 @@ with tf.Session() as sess:
     sess.run(init)
 
     print("======== Training Begin ========")
-    while global_step.eval() < Yggdrasil.epoch:
+    while global_step.eval() * Yggdrasil.batch_size < Yggdrasil.epoch * Yggdrasil.n_dataset_len:
         tmp_recode = sess.run(iterator.get_next())
         _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
-        print("%s : step: [%d] with loss [%.8f]" % (curr_normal_time(), global_step.eval(), cal_loss))
+        if global_step.eval() % 100:
+            print("%s : epoch:[%d] - step:[%d] | with loss [%.8f]" %
+                  (curr_normal_time(), (global_step.eval()*Yggdrasil.batch_size/Yggdrasil.n_dataset_len),
+                   global_step.eval(), cal_loss))
 
     print("======== Training Finished ========")
 
@@ -110,7 +114,7 @@ with tf.Session() as sess:
     for i in xrange(total_num):
         if predict_label[i] == ground_truth_label[i]:
             correct_num += 1
-            # print()
+            print(i)
     print("Acc: %.3f" % (float(correct_num)/total_num))
 
 
