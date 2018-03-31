@@ -30,11 +30,17 @@ def _parser_ds(dict_ds_item):
     # print(dict_ds_item)
     t_image = dict_ds_item['images']
     t_label = dict_ds_item['labels']
+
     t_img_str = tf.read_file(t_image)
     t_img_decoded = tf.image.decode_jpeg(t_img_str)
     t_img_resized = tf.image.resize_image_with_crop_or_pad\
         (t_img_decoded, target_height=Yggdrasil.in_height, target_width=Yggdrasil.in_width)
+
+    # t_label = tf.cast(t_label, dtype=tf.int16)
+    t_label = tf.keras.utils.to_categorical(t_label, num_classes=Yggdrasil.n_class)
+
     print(t_img_resized)
+    print(t_label)
     return {'image': t_img_resized, 'label': t_label}  # 注意这里我更改了没一个维度的变量的key的内容
 
 
