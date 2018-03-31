@@ -15,9 +15,10 @@ class Yggdrasil:
     batch_size = 32
     keep_prob = 0.5
     epoch = 30
+    n_class = 1
 
     def __init__(self, n_class):
-        self.n_class = n_class
+        Yggdrasil.n_class = n_class
 
     def model(self, X):
 
@@ -26,12 +27,12 @@ class Yggdrasil:
         print(resnet50.output_shape)
         print("==== Shape +++ ====")
 
-        avg_pool = tf.nn.avg_pool(resnet50, ksize=[1, 1, 1, 1], strides=[1, 2, 2, 1], padding='SAME')
+        avg_pool = tf.nn.avg_pool(resnet50.output, ksize=[1, 1, 1, 1], strides=[1, 2, 2, 1], padding='SAME')
 
         flatten1 = tf.layers.flatten(avg_pool)  # Flatten the tensor and keep batch_size dim
         linear1 = tf.layers.dense(flatten1, units=512, activation=None, use_bias=True)
 
-        bn1 = tf.layers.batch_normalization(linear1, axis=0)
+        bn1 = tf.layers.batch_normalization(linear1, axis=-1)
 
         relu1 = tf.nn.relu(bn1)
 
