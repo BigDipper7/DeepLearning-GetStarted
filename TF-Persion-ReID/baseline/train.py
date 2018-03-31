@@ -131,7 +131,7 @@ with tf.Session() as sess:
     test_X = tmp_test_record['image']
     test_Y = tmp_test_record['label']
     print("load test data input X with shape: "+test_X.shape)
-    prediction = sess.run([inference], feed_dict={X: test_X})
+    prediction, cal_loss = sess.run([inference, loss], feed_dict={X: test_X, Y: test_Y})
     predict_label = np.argmax(prediction, axis=-1)
     ground_truth_label = np.argmax(test_Y, axis=-1)
     correct_num = 0
@@ -141,6 +141,7 @@ with tf.Session() as sess:
             correct_num += 1
             print(i)
     print("Acc: %.7f" % (float(correct_num)/total_num))
+    print("Loss: %.8f" % cal_loss)
 
 
 
