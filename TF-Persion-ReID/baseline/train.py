@@ -40,11 +40,11 @@ x_test = reduce(lambda _x, _y: _x + ([_y] if _y not in _x else []), all_labels_t
 n_classes_test = len(x_test)
 print("Have n_classes_test: %d !" % n_classes_test)
 
-print(all_labels_test['labels'])
-all_labels_test['labels'] = map(lambda _T: x.index(_T), all_labels_test['labels'])
-print(all_labels_test['labels'])
-all_labels_test['labels'] = tf.keras.utils.to_categorical(all_labels_test['labels'], num_classes=n_classes_test)
-print(all_labels_test['labels'])
+print(dict_plain_ds_test['labels'])
+dict_plain_ds_test['labels'] = map(lambda _T: x_test.index(_T), dict_plain_ds_test['labels'])
+print(dict_plain_ds_test['labels'])
+dict_plain_ds_test['labels'] = tf.keras.utils.to_categorical(dict_plain_ds_test['labels'], num_classes=n_classes_test)
+print(dict_plain_ds_test['labels'])
 exit(-1)
 
 # define module of entrance
