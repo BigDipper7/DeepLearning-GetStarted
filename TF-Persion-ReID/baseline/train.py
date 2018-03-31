@@ -14,11 +14,12 @@ from utils.const import DS_ROOT_PTH
 
 # define super-params
 
+
+dict_plain_ds_train, dict_plain_ds_test = get_data_list(DS_ROOT_PTH)
+
 # =================================================
 # get train dataset paths and labels
 # =================================================
-dict_plain_ds_train, dict_plain_ds_test = get_data_list(DS_ROOT_PTH)
-# print(datasets_train)
 all_labels = dict_plain_ds_train['labels']
 n_dataset_len = len(all_labels)
 x = reduce(lambda _x, _y: _x + ([_y] if _y not in _x else []), all_labels, [])
@@ -33,7 +34,7 @@ print(dict_plain_ds_train['labels'])
 
 # =================================================
 # get test dataset paths and labels
-#  =================================================
+# =================================================
 all_labels_test = dict_plain_ds_test['labels']
 n_test_len = len(all_labels_test)
 x_test = reduce(lambda _x, _y: _x + ([_y] if _y not in _x else []), all_labels_test, [])
