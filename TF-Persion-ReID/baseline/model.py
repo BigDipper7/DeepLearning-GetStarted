@@ -16,9 +16,11 @@ class Yggdrasil:
     keep_prob = 0.5
     epoch = 30
     n_class = 1
+    n_dataset_len = 1
 
-    def __init__(self, n_class):
+    def __init__(self, n_class, n_dataset_len):
         Yggdrasil.n_class = n_class
+        Yggdrasil.n_dataset_len = n_dataset_len
 
     def model(self, X):
 
