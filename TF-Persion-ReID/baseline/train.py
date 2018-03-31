@@ -22,6 +22,13 @@ x = reduce(lambda x, y: x+([y] if y not in x else []), all_labels, [])
 n_classes = len(x)
 print("Have n_classes: %d !" % n_classes)
 
+print(dict_plain_ds_train['labels'])
+dict_plain_ds_train['labels'] = map(lambda _T: x.index(_T), dict_plain_ds_train['labels'])
+print(dict_plain_ds_train['labels'])
+dict_plain_ds_train['labels'] = tf.keras.utils.to_categorical(dict_plain_ds_train['labels'], num_classes=n_classes)
+print(dict_plain_ds_train['labels'])
+# exit(-1)
+
 # define module of entrance
 yggdrasil = Yggdrasil(n_class=n_classes)
 
@@ -37,7 +44,7 @@ def _parser_ds(dict_ds_item):
         (t_img_decoded, target_height=Yggdrasil.in_height, target_width=Yggdrasil.in_width)
 
     # t_label = tf.cast(t_label, dtype=tf.int16)
-    t_label = tf.keras.utils.to_categorical(t_label, num_classes=Yggdrasil.n_class)
+    # t_label = tf.keras.utils.to_categorical(t_label, num_classes=Yggdrasil.n_class)
 
     print(t_img_resized)
     print(t_label)
@@ -88,7 +95,7 @@ with tf.Session() as sess:
     while global_step.eval() < Yggdrasil.epoch:
         tmp_recode = sess.run(iterator.get_next())
         _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
-        print("%s : epoch: [%d] with loss [%.8f]" % (curr_normal_time(), global_step.eval(), cal_loss))
+        print("%s : step: [%d] with loss [%.8f]" % (curr_normal_time(), global_step.eval(), cal_loss))
 
     print("======== Training Finished ========")
 
