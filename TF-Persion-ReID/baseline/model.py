@@ -27,6 +27,7 @@ class Yggdrasil:
         print(resnet50.output_shape)
         print("==== Shape +++ ====")
 
+        # 注意的是resnet50本身不是tensor，所以需要指定输出的tensor是什么
         avg_pool = tf.nn.avg_pool(resnet50.output, ksize=[1, 1, 1, 1], strides=[1, 2, 2, 1], padding='SAME')
 
         flatten1 = tf.layers.flatten(avg_pool)  # Flatten the tensor and keep batch_size dim

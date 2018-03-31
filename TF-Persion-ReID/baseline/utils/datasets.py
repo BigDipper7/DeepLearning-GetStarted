@@ -23,7 +23,7 @@ def get_data_list(root_pth):
             fsplits = file_name.split('_')
             tmp_label = fsplits[0]
             _dataset_train['images'].append(os.path.join(root, file_name))
-            _dataset_train['labels'].append(os.path.join(tmp_label))
+            _dataset_train['labels'].append(tmp_label)
 
     return _dataset_train
 
