@@ -128,8 +128,8 @@ with tf.Session() as sess:
     while global_step.eval() * Yggdrasil.batch_size < Yggdrasil.epoch * Yggdrasil.n_dataset_len:
         tmp_recode = sess.run(iterator.get_next())
         _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
-        if global_step.eval() % 1 == 0:
-            saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+global_step.eval()))
+        if global_step.eval() % 100 == 0:
+            saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+str(global_step.eval())))
             print("%s : epoch:[%d] - step:[%d] | with loss [%.8f]" %
                   (curr_normal_time(), (global_step.eval()*Yggdrasil.batch_size/Yggdrasil.n_dataset_len),
                    global_step.eval(), cal_loss))
