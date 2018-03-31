@@ -14,12 +14,14 @@ from utils.const import DS_ROOT_PTH
 
 # define super-params
 
+# =================================================
 # get train dataset paths and labels
-dict_plain_ds_train = get_data_list(DS_ROOT_PTH)
+# =================================================
+dict_plain_ds_train, dict_plain_ds_test = get_data_list(DS_ROOT_PTH)
 # print(datasets_train)
 all_labels = dict_plain_ds_train['labels']
 n_dataset_len = len(all_labels)
-x = reduce(lambda x, y: x+([y] if y not in x else []), all_labels, [])
+x = reduce(lambda _x, _y: _x + ([_y] if _y not in _x else []), all_labels, [])
 n_classes = len(x)
 print("Have n_classes: %d !" % n_classes)
 
@@ -28,7 +30,22 @@ dict_plain_ds_train['labels'] = map(lambda _T: x.index(_T), dict_plain_ds_train[
 print(dict_plain_ds_train['labels'])
 dict_plain_ds_train['labels'] = tf.keras.utils.to_categorical(dict_plain_ds_train['labels'], num_classes=n_classes)
 print(dict_plain_ds_train['labels'])
-# exit(-1)
+
+# =================================================
+# get test dataset paths and labels
+#  =================================================
+all_labels_test = dict_plain_ds_test['labels']
+n_test_len = len(all_labels_test)
+x_test = reduce(lambda _x, _y: _x + ([_y] if _y not in _x else []), all_labels_test, [])
+n_classes_test = len(x_test)
+print("Have n_classes_test: %d !" % n_classes_test)
+
+print(all_labels_test['labels'])
+all_labels_test['labels'] = map(lambda _T: x.index(_T), all_labels_test['labels'])
+print(all_labels_test['labels'])
+all_labels_test['labels'] = tf.keras.utils.to_categorical(all_labels_test['labels'], num_classes=n_classes_test)
+print(all_labels_test['labels'])
+exit(-1)
 
 # define module of entrance
 yggdrasil = Yggdrasil(n_class=n_classes, n_dataset_len=n_dataset_len)
