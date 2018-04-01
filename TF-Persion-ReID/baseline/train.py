@@ -114,6 +114,8 @@ with tf.Session() as sess:
     optimizer = tf.train.MomentumOptimizer(learning_rate=0.01, momentum=0.9, use_nesterov=True).\
         minimize(loss, global_step=global_step,)
 
+    next_element = iterator.get_next()
+
     # initialize
     init = tf.global_variables_initializer()
     sess.run(init)
@@ -126,7 +128,7 @@ with tf.Session() as sess:
 
     print("======== Training Begin ========")
     while global_step.eval() * Yggdrasil.batch_size < Yggdrasil.epoch * Yggdrasil.n_dataset_len:
-        tmp_recode = sess.run(iterator.get_next())
+        tmp_recode = sess.run(next_element)
         _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
         if global_step.eval() % 100 == 0:
             saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+str(global_step.eval())))
