@@ -105,16 +105,23 @@ with tf.Session() as sess:
     Y = tf.placeholder(tf.float32, shape=(None, yggdrasil.n_class))
 
     logits = yggdrasil.model(X)
+    tf.summary.histogram("logits", logits)
+    tf.summary.scalar("logits", logits)
 
     inference = tf.nn.softmax(logits=logits)
 
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=logits))
+    tf.summary.histogram("loss", loss)
+    tf.summary.scalar("loss", loss)
 
     # decay=5e-4,
     optimizer = tf.train.MomentumOptimizer(learning_rate=0.01, momentum=0.9, use_nesterov=True).\
         minimize(loss, global_step=global_step,)
 
     next_element = iterator.get_next()
+
+    summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
+    sum_writer = tf.summary.FileWriter(logdir=LOG_DIR, graph=sess.graph)
 
     # initialize
     init = tf.global_variables_initializer()
@@ -128,13 +135,18 @@ with tf.Session() as sess:
 
     print("======== Training Begin ========")
     while global_step.eval() * Yggdrasil.batch_size < Yggdrasil.epoch * Yggdrasil.n_dataset_len:
+        run_metadata = tf.RunMetadata()
+
         tmp_recode = sess.run(next_element)
-        _, cal_loss = sess.run([optimizer, loss], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
+        _, cal_loss, sums = sess.run([optimizer, loss, summaries], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
+
+        sum_writer.add_summary(sums, global_step.eval())
         if global_step.eval() % 100 == 0:
             saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+str(global_step.eval())))
             print("%s : epoch:[%d] - step:[%d] | with loss [%.8f]" %
                   (curr_normal_time(), (global_step.eval()*Yggdrasil.batch_size/Yggdrasil.n_dataset_len),
                    global_step.eval(), cal_loss))
+            sum_writer.add_run_metadata(run_metadata)
 
     print("======== Training Finished ========")
 
