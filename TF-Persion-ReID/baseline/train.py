@@ -148,7 +148,7 @@ with tf.Session() as sess:
         _, cal_loss, sums = sess.run([optimizer, loss, summaries], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
 
         sum_writer.add_summary(sums, global_step.eval())
-        if global_step.eval() % 1 == 0:
+        if global_step.eval() % 100 == 0:
             saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+str(global_step.eval())))
             print("%s : epoch:[%d] - step:[%d] | with loss [%.8f]" %
                   (curr_normal_time(), (global_step.eval()*Yggdrasil.batch_size/Yggdrasil.n_dataset_len),
