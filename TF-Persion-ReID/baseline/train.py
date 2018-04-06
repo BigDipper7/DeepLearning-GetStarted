@@ -104,34 +104,41 @@ with tf.Session() as sess:
     X = tf.placeholder(tf.float32, shape=(None, Yggdrasil.in_height, Yggdrasil.in_width, Yggdrasil.in_channel))
     Y = tf.placeholder(tf.float32, shape=(None, yggdrasil.n_class))
 
-    logits = yggdrasil.model(X)
-    tf.summary.histogram("logits", logits)
-    # tf.summary.scalar("logits", logits)
+    with tf.name_scope('session'):
+        with tf.name_scope('logits'):
+            logits = yggdrasil.model(X)
+            tf.summary.histogram("logits", logits)
+            # tf.summary.scalar("logits", logits)
 
-    inference = tf.nn.softmax(logits=logits)
+        with tf.name_scope('inferences'):
+            inference = tf.nn.softmax(logits=logits)
 
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=logits))
-    tf.summary.histogram("loss", loss)
-    # tf.summary.scalar("loss", loss)
+        with tf.name_scope('loss'):
+            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=logits))
+            tf.summary.histogram("loss", loss)
+            # tf.summary.scalar("loss", loss)
 
-    # decay=5e-4,
-    optimizer = tf.train.MomentumOptimizer(learning_rate=0.01, momentum=0.9, use_nesterov=True).\
-        minimize(loss, global_step=global_step,)
+        with tf.name_scope('optimizer'):
+            # decay=5e-4,
+            optimizer = tf.train.MomentumOptimizer(learning_rate=0.01, momentum=0.9, use_nesterov=True).\
+                minimize(loss, global_step=global_step,)
+
+        with tf.name_scope('summary_ops'):
+            summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
+            sum_writer = tf.summary.FileWriter(logdir=LOG_DIR, graph=sess.graph)
 
     next_element = iterator.get_next()
-
-    summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
-    sum_writer = tf.summary.FileWriter(logdir=LOG_DIR, graph=sess.graph)
 
     # initialize
     init = tf.global_variables_initializer()
     sess.run(init)
 
-    saver = tf.train.Saver()
-    ckpt = tf.train.get_checkpoint_state(LOG_DIR)
-    if ckpt and ckpt.model_checkpoint_path:
-        print('Restore model')
-        saver.restore(sess, ckpt.model_checkpoint_path)
+    with tf.name_scope('saver_ops'):
+        saver = tf.train.Saver()
+        ckpt = tf.train.get_checkpoint_state(LOG_DIR)
+        if ckpt and ckpt.model_checkpoint_path:
+            print('Restore model')
+            saver.restore(sess, ckpt.model_checkpoint_path)
 
     print("======== Training Begin ========")
     while global_step.eval() * Yggdrasil.batch_size < Yggdrasil.epoch * Yggdrasil.n_dataset_len:

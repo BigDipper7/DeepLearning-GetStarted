@@ -44,6 +44,7 @@ class Yggdrasil:
                 relu1 = tf.nn.relu(bn1)
 
                 dropout1 = tf.nn.dropout(relu1, keep_prob=self.keep_prob)
+
             with tf.name_scope('logits'):
                 logits = tf.layers.dense(dropout1, units=self.n_class, activation=None, use_bias=True)
 
