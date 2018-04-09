@@ -155,7 +155,7 @@ with tf.Session() as sess:
         _, cal_loss, sums = sess.run([optimizer, loss, summaries], feed_dict={X: tmp_recode['image'], Y: tmp_recode['label']})
 
         sum_writer.add_summary(sums, global_step.eval())
-        if global_step.eval() % 100 == 0:
+        if global_step.eval() % Yggdrasil.n_invoke_step_per_epoch == 0:
             predicts, = sess.run([inference,], feed_dict={X: tmp_recode['image']})  # 妈的注意下这个逗号，因为是一系列返回值
             acc = cal_acc(predicts, tmp_recode['label'])
 
