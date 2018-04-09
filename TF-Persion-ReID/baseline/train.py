@@ -10,7 +10,7 @@ import os
 
 from model import Yggdrasil
 from utils.util import curr_normal_time
-from utils.datasets import get_data_list
+from utils.datasets import get_data_list, get_val_train_ds
 from utils.const import DS_ROOT_PTH, LOG_DIR
 
 # define super-params
@@ -18,7 +18,7 @@ from utils.const import DS_ROOT_PTH, LOG_DIR
 if not os.path.exists(LOG_DIR):
     os.mkdir(LOG_DIR)
 
-dict_plain_ds_train, dict_plain_ds_test = get_data_list(DS_ROOT_PTH)
+dict_plain_ds_train, dict_plain_ds_test = get_val_train_ds(DS_ROOT_PTH)
 
 # =================================================
 # get train dataset paths and labels
