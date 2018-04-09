@@ -151,7 +151,7 @@ with tf.Session() as sess:
 
         sum_writer.add_summary(sums, global_step.eval())
         if global_step.eval() % 100 == 0:
-            predicts = sess.run([inference,], feed_dict={X: tmp_recode['image']})
+            predicts, = sess.run([inference,], feed_dict={X: tmp_recode['image']})  # 妈的注意下这个逗号，因为是一系列返回值
             acc = cal_acc(predicts, tmp_recode['label'])
 
             saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+str(global_step.eval())))
