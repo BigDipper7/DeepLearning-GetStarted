@@ -123,13 +123,15 @@ with tf.Session() as sess:
             optimizer = tf.train.MomentumOptimizer(learning_rate=0.01, momentum=0.9, use_nesterov=True).\
                 minimize(loss, global_step=global_step,)
 
-        with tf.name_scope('summary_ops'):
-            summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
-            sum_writer = tf.summary.FileWriter(logdir=LOG_DIR, graph=sess.graph)
-
         with tf.name_scope('get_next_element_in_ds'):
             next_element = iterator.get_next()
             next_element_in_valid = iterator_test.get_next()
+            tf.summary.image("train-images", next_element['image'])
+            tf.summary.image("valid-images", next_element_in_valid['image'])
+
+        with tf.name_scope('summary_ops'):
+            summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
+            sum_writer = tf.summary.FileWriter(logdir=LOG_DIR, graph=sess.graph)
 
     # initialize
     init = tf.global_variables_initializer()
