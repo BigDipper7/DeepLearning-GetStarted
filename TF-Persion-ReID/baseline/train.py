@@ -62,8 +62,11 @@ def _parser_ds(dict_ds_item):
 
     t_img_str = tf.read_file(t_image)
     t_img_decoded = tf.image.decode_jpeg(t_img_str)
-    t_img_resized = tf.image.resize_image_with_crop_or_pad\
-        (t_img_decoded, target_height=Yggdrasil.in_height, target_width=Yggdrasil.in_width)
+    # 下面这个方法有点尴尬，因为图片太小
+    # t_img_resized = tf.image.resize_image_with_crop_or_pad\
+    #     (t_img_decoded, target_height=Yggdrasil.in_height, target_width=Yggdrasil.in_width)
+    t_img_resized = tf.image.resize_images\
+        (t_img_decoded, [Yggdrasil.in_height, Yggdrasil.in_width], method=tf.image.ResizeMethod.BILINEAR)
 
     # t_label = tf.cast(t_label, dtype=tf.int16)
     # t_label = tf.keras.utils.to_categorical(t_label, num_classes=Yggdrasil.n_class)
@@ -127,7 +130,7 @@ with tf.Session() as sess:
             next_element = iterator.get_next()
             next_element_in_valid = iterator_test.get_next()
             tf.summary.image("train-images", next_element['image'])
-            tf.summary.image("valid-images", next_element_in_valid['image'])
+            # tf.summary.image("valid-images", next_element_in_valid['image'])
 
         with tf.name_scope('summary_ops'):
             summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
