@@ -163,6 +163,8 @@ with tf.Session() as sess:
     test_Y = tmp_test_record['label']
     print("load test data input X with shape: "+str(test_X.shape))
     prediction, cal_loss = sess.run([inference, loss], feed_dict={X: test_X, Y: test_Y})
+    print prediction
+    print test_Y
     predict_label = np.argmax(prediction, axis=-1)
     ground_truth_label = np.argmax(test_Y, axis=-1)
     correct_num = 0
