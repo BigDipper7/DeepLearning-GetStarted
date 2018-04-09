@@ -67,13 +67,14 @@ def _parser_ds(dict_ds_item):
     #     (t_img_decoded, target_height=Yggdrasil.in_height, target_width=Yggdrasil.in_width)
     t_img_resized = tf.image.resize_images\
         (t_img_decoded, [Yggdrasil.in_height, Yggdrasil.in_width], method=tf.image.ResizeMethod.BILINEAR)
+    t_img_norm = tf.image.per_image_standardization(t_img_resized)
 
     # t_label = tf.cast(t_label, dtype=tf.int16)
     # t_label = tf.keras.utils.to_categorical(t_label, num_classes=Yggdrasil.n_class)
 
-    print(t_img_resized)
+    print(t_img_norm)
     print(t_label)
-    return {'image': t_img_resized, 'label': t_label}  # 注意这里我更改了没一个维度的变量的key的内容
+    return {'image': t_img_norm, 'label': t_label}  # 注意这里我更改了没一个维度的变量的key的内容
 
 
 # define datasets
