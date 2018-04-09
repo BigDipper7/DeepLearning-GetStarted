@@ -18,6 +18,25 @@ def str_to_boolean(v):
     return v.lower() in ("true", "yes", "t", "1")
 
 
+# calculate acc with predicts_labels and one-hot_softmax_labels
+# of a shape *[None, ONE_HOT_LABELS_CLASS_NUM]*
+def cal_acc(t_predict, t_labels):
+    predict_label = np.argmax(t_predict, axis=-1)
+    ground_truth_label = np.argmax(t_labels, axis=-1)
+
+    correct_num = 0
+    total_num = len(ground_truth_label)
+
+    for i in range(total_num):
+        if predict_label[i] == ground_truth_label[i]:
+            correct_num += 1
+            print(i)
+
+    acc = float(correct_num) / total_num
+    # print("Acc: %.7f" % acc)
+    return acc
+
+
 # =====================
 # =     Time Module   =
 # =====================

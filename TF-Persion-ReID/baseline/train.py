@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 from model import Yggdrasil
-from utils.util import curr_normal_time
+from utils.util import curr_normal_time, cal_acc
 from utils.datasets import get_data_list, get_val_train_ds
 from utils.const import DS_ROOT_PTH, LOG_DIR
 
@@ -127,7 +127,9 @@ with tf.Session() as sess:
             summaries = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
             sum_writer = tf.summary.FileWriter(logdir=LOG_DIR, graph=sess.graph)
 
-    next_element = iterator.get_next()
+        with tf.name_scope('get_next_element_in_ds'):
+            next_element = iterator.get_next()
+            next_element_in_valid = iterator_test.get_next()
 
     # initialize
     init = tf.global_variables_initializer()
@@ -149,10 +151,13 @@ with tf.Session() as sess:
 
         sum_writer.add_summary(sums, global_step.eval())
         if global_step.eval() % 100 == 0:
+            predicts = sess.run([inference,], feed_dict={X: tmp_recode['image']})
+            acc = cal_acc(predicts, tmp_recode['label'])
+
             saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt.'+str(global_step.eval())))
-            print("%s : epoch:[%d] - step:[%d] | with loss [%.8f]" %
+            print("%s : epoch:[%d] - step:[%d] | with loss [%.8f] and acc:[%.5f] percentage" %
                   (curr_normal_time(), (global_step.eval()*Yggdrasil.batch_size/Yggdrasil.n_dataset_len),
-                   global_step.eval(), cal_loss))
+                   global_step.eval(), cal_loss, acc*100))
             sum_writer.add_run_metadata(run_metadata, tag="step:%d"%global_step.eval(), global_step=global_step.eval())
 
     print("======== Training Finished ========")
@@ -165,17 +170,9 @@ with tf.Session() as sess:
     prediction, cal_loss = sess.run([inference, loss], feed_dict={X: test_X, Y: test_Y})
     print prediction
     print test_Y
-    predict_label = np.argmax(prediction, axis=-1)
-    ground_truth_label = np.argmax(test_Y, axis=-1)
-    correct_num = 0
-    total_num = len(ground_truth_label)
-    for i in xrange(total_num):
-        if predict_label[i] == ground_truth_label[i]:
-            correct_num += 1
-            print(i)
-    print("Acc: %.7f" % (float(correct_num)/total_num))
+    acc = cal_acc(prediction, test_Y)
+    print("Acc: %.7f" % acc)
     print("Loss: %.8f" % cal_loss)
-
 
 
 
