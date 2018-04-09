@@ -67,7 +67,8 @@ def _parser_ds(dict_ds_item):
     #     (t_img_decoded, target_height=Yggdrasil.in_height, target_width=Yggdrasil.in_width)
     t_img_resized = tf.image.resize_images\
         (t_img_decoded, [Yggdrasil.in_height, Yggdrasil.in_width], method=tf.image.ResizeMethod.BILINEAR)
-    t_img_norm = tf.image.per_image_standardization(t_img_resized)
+    t_img_rand_flip = tf.image.random_flip_left_right(t_img_resized)
+    t_img_norm = tf.image.per_image_standardization(t_img_rand_flip)
 
     # t_label = tf.cast(t_label, dtype=tf.int16)
     # t_label = tf.keras.utils.to_categorical(t_label, num_classes=Yggdrasil.n_class)
