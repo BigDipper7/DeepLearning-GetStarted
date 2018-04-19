@@ -4,13 +4,14 @@
 # Created on 27/03/2018]
 
 import tensorflow as tf
+from utils.const import IN_HEIGHT, IN_WIDTH
 # from keras import backend as K
 # from keras.applications.resnet50 import ResNet50
 
 
 class Yggdrasil:
-    in_width = 197
-    in_height = 256
+    in_width = IN_WIDTH
+    in_height = IN_HEIGHT
     in_channel = 3
     batch_size = 32
     keep_prob = 0.5
@@ -22,6 +23,7 @@ class Yggdrasil:
     def __init__(self, n_class, n_dataset_len):
         Yggdrasil.n_class = n_class
         Yggdrasil.n_dataset_len = n_dataset_len
+        self.resnet = None
 
     def model(self, X):
 
@@ -31,6 +33,7 @@ class Yggdrasil:
                 print("==== Shape : ====")
                 print(resnet50.output_shape)
                 print("==== Shape +++ ====")
+                self.resnet = resnet50
 
             with tf.name_scope('avg_pool1'):
                 # 注意的是resnet50本身不是tensor，所以需要指定输出的tensor是什么
@@ -50,3 +53,7 @@ class Yggdrasil:
                 logits = tf.layers.dense(dropout1, units=self.n_class, activation=None, use_bias=True)
 
         return logits
+
+
+    # def extract_features(self, image_path):
+    #
