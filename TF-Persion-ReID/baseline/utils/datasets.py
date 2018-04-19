@@ -4,6 +4,9 @@
 # Created on 29/03/2018
 
 import os
+import tensorflow as tf
+import numpy as np
+from const import IN_HEIGHT, IN_WIDTH, SEED, BATCH_SIZE, EPOCH
 
 
 def get_data_list(root_pth):
@@ -94,6 +97,88 @@ def get_val_train_ds(split_root_pth):
 
     return _dataset_train, _dataset_valid
 
+
+def _get_plain_ds_info():
+    """
+    获取原始数据集plain信息，以dict的形式进行存储
+    :return: dicts '{"images": [], "pids": [], "cids": []}'
+    """
+    plain_ds_train = {"images": [], "pids": [], "cids": []}
+    plain_ds_valid = {"images": [], "pids": [], "cids": []}
+
+    return plain_ds_train, plain_ds_valid
+
+
+def _re_group_plain_ds_info():
+    """
+    对原始数据再次整合成新的dict
+    :return: dicts "{'images': [], 'labels': [], 'pids': [], 'cids': []}"
+        其中images存储了image的file path的list，         @string
+        labels存储了one-hot的label的represent的list，    @binary list with shape:(n_classes,)
+        pids存储了原始的lable的信息，用于鉴别是否是同一个人， @int32
+        cids存储了camera的信息，用于鉴别识别效果，          @int32
+    """
+    plain_ds_train, plain_ds_valid = _get_plain_ds_info()
+
+    # -----
+    # process train ds info
+    all_pids = plain_ds_train['pids']
+    no_dupl_pids = sorted(set(all_pids))
+
+    n_classes_train = len(no_dupl_pids)
+
+    one_hot_pids = tf.keras.utils.to_categorical(all_pids, num_classes=n_classes_train)
+    plain_ds_train['labels'] = one_hot_pids
+
+    # -----
+    # process valid ds info
+    all_pids = plain_ds_valid['pids']
+    no_dupl_pids = sorted(set(all_pids))
+
+    n_classes_valid = len(no_dupl_pids)
+
+    one_hot_pids = tf.keras.utils.to_categorical(all_pids, num_classes=n_classes_valid)
+    plain_ds_valid['labels'] = one_hot_pids
+
+    return n_classes_train, plain_ds_train, plain_ds_valid
+
+
+def _ds_mapping_parser(item):
+    plain_images = item['images']
+    plain_labels = item['labels']
+    plain_pids = item['pids']
+    plain_cids = item['cids']
+
+    # ----
+    # process images
+    img_bytes = tf.read_file(plain_images)
+    img_decoded = tf.image.decode_jpeg(img_bytes, channels=3)
+    img_resized = tf.image.resize_images(images=img_decoded, size=(IN_HEIGHT, IN_WIDTH), method=tf.image.ResizeMethod.BILINEAR)
+    img_rand_flip = tf.image.random_flip_left_right(img_resized, seed=SEED)
+
+    img_norm = tf.image.per_image_standardization(img_rand_flip)
+
+    return {'image': img_norm, 'label': plain_labels, 'pid': plain_pids, 'cid': plain_cids}
+
+
+def get_ds_iterators():
+    '''
+    获得dataset iterators
+    :return:
+    '''
+    n_classes_train, plain_ds_train, plain_ds_valid = _re_group_plain_ds_info()
+
+    ds_train = tf.data.Dataset.from_tensor_slices(plain_ds_train)
+    ds_train = ds_train.map(_ds_mapping_parser)
+    ds_train = ds_train.batch(BATCH_SIZE).repeat(EPOCH).shuffle(1024, seed=SEED, reshuffle_each_iteration=True)
+    train_os_iterator = ds_train.make_one_shot_iterator()
+
+    ds_valid = tf.data.Dataset.from_tensor_slices(plain_ds_valid)
+    ds_valid = ds_valid.map(_ds_mapping_parser)
+    ds_valid = ds_valid.batch(BATCH_SIZE).repeat(EPOCH).shuffle(1024, seed=SEED, reshuffle_each_iteration=True)
+    valid_os_iterator = ds_valid.make_one_shot_iterator()
+
+    return n_classes_train, train_os_iterator, valid_os_iterator
 
 
 if __name__ == '__main__':
