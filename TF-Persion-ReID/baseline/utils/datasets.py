@@ -6,7 +6,7 @@
 import os
 import tensorflow as tf
 import numpy as np
-from const import IN_HEIGHT, IN_WIDTH, SEED, BATCH_SIZE, EPOCH
+from const import IN_HEIGHT, IN_WIDTH, SEED, BATCH_SIZE, EPOCH, DS_ROOT_PTH, DS_ROOT_PTH_PYTORCH
 
 
 def get_data_list(root_pth):
@@ -106,6 +106,55 @@ def _get_plain_ds_info():
     plain_ds_train = {"images": [], "pids": [], "cids": []}
     plain_ds_valid = {"images": [], "pids": [], "cids": []}
 
+    _train_path = os.path.join(DS_ROOT_PTH, "pytorch/train")
+    _valid_path = os.path.join(DS_ROOT_PTH, "pytorch/val")
+
+    for root, dirs, files in os.walk(_train_path, topdown=True):
+        print(root)
+        print(dirs)
+        print(files)
+
+        for str_class_name in dirs:
+            # 遍历所有的class name，即包含的dir们
+            _tmp_train_set_pth = os.path.join(root, str_class_name)
+
+            for c_root, c_dirs, c_files in os.walk(_tmp_train_set_pth, topdown=True):
+                for c_file in c_files:
+                    if not c_file[-4:] == '.jpg':
+                        continue
+                    # 遍历获取每次的file name，用于拼接出image的path
+                    plain_ds_train['images'].append(os.path.join(c_root, c_file))
+                    plain_ds_train['pids'].append(int(str_class_name))  # 强行增加了一个label的数字化的代码
+                    plain_ds_train['cids'].append(int(str(c_file).split('_')[1][1]))  # 强行增加了一个cid的数字化的代码
+                # 结束当前循环，后面没意义了
+                break
+
+        # 直接结束循环，后面的循环已经没有什么意义了
+        break
+
+    for root, dirs, files in os.walk(_valid_path, topdown=True):
+        print(root)
+        print(dirs)
+        print(files)
+
+        for str_class_name in dirs:
+            # 遍历所有的class name，即包含的dir们
+            _tmp_valid_set_pth = os.path.join(root, str_class_name)
+
+            for c_root, c_dirs, c_files in os.walk(_tmp_valid_set_pth, topdown=True):
+                for c_file in c_files:
+                    if not c_file[-4:] == '.jpg':
+                        continue
+                    # 遍历获取每次的file name，用于拼接出image的path
+                    plain_ds_valid['images'].append(os.path.join(c_root, c_file))
+                    plain_ds_valid['pids'].append(int(str_class_name))  # 强行增加了一个label的数字化的代码
+                    plain_ds_valid['cids'].append(int(str(c_file).split('_')[1][1]))  # 强行增加了一个cid的数字化的代码
+                # 结束当前循环，后面没意义了
+                break
+
+        # 直接结束循环，后面的循环已经没有什么意义了
+        break
+
     return plain_ds_train, plain_ds_valid
 
 
@@ -183,4 +232,7 @@ def get_ds_iterators():
 
 if __name__ == '__main__':
     from const import DS_ROOT_PTH
-    x_ds_train, x_ds_valid = get_val_train_ds(DS_ROOT_PTH)
+    # x_ds_train, x_ds_valid = get_val_train_ds(DS_ROOT_PTH)
+
+    x_ds_train, x_ds_valid = _get_plain_ds_info()
+    print(x_ds_train, x_ds_valid)
