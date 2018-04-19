@@ -9,3 +9,5 @@ LOG_DIR = './logs'
 
 IN_WIDTH = 197
 IN_HEIGHT = 256
+
+SEED = 1248163264
