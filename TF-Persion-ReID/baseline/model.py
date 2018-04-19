@@ -4,7 +4,7 @@
 # Created on 27/03/2018]
 
 import tensorflow as tf
-from utils.const import IN_HEIGHT, IN_WIDTH
+from utils.const import IN_HEIGHT, IN_WIDTH, IN_CHANNEL, BATCH_SIZE
 # from keras import backend as K
 # from keras.applications.resnet50 import ResNet50
 
@@ -12,8 +12,8 @@ from utils.const import IN_HEIGHT, IN_WIDTH
 class Yggdrasil:
     in_width = IN_WIDTH
     in_height = IN_HEIGHT
-    in_channel = 3
-    batch_size = 32
+    in_channel = IN_CHANNEL
+    batch_size = BATCH_SIZE
     keep_prob = 0.5
     epoch = 30
     n_class = 1
