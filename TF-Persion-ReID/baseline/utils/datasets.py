@@ -173,16 +173,22 @@ def _re_group_plain_ds_info():
     # process train ds info
     all_pids = plain_ds_train['pids']
     no_dupl_pids = sorted(set(all_pids))
+    all_pids = map(lambda _T1: no_dupl_pids.index(_T1), all_pids)
 
     n_classes_train = len(no_dupl_pids)
 
     one_hot_pids = tf.keras.utils.to_categorical(all_pids, num_classes=n_classes_train)
     plain_ds_train['labels'] = one_hot_pids
 
+    # print(no_dupl_pids)
+    # print(all_pids)
+    # print(one_hot_pids)
+
     # -----
     # process valid ds info
     all_pids = plain_ds_valid['pids']
     no_dupl_pids = sorted(set(all_pids))
+    all_pids = map(lambda _T1: no_dupl_pids.index(_T1), all_pids)
 
     n_classes_valid = len(no_dupl_pids)
 
