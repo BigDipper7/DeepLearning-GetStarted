@@ -16,9 +16,17 @@ ygg = Yggdrasil(n_classes_train, 10000)
 
 
 with tf.name_scope('_sess'):
+    with tf.name_scope('_placeholders'):
+        X = tf.placeholder(tf.float32, shape=(None, Yggdrasil.in_height, Yggdrasil.in_width, Yggdrasil.in_channel), name="X")
+        Y = tf.placeholder(tf.float32, shape=(None, Yggdrasil.n_class), name="Y")
+
     with tf.name_scope('_dataset'):
         next_op_train = train_os_iterator.get_next()
         next_op_valid = valid_os_iterator.get_next()
+
+    with tf.name_scope('_extract_features'):
+        get_features = ygg.extract_features(X=X)
+
 
     with tf.name_scope('_init'):
         init = tf.global_variables_initializer()
@@ -33,3 +41,4 @@ with tf.Session() as sess:
         if ckpt and ckpt.model_checkpoint_path:
             print('Restore model')
             saver.restore(sess, ckpt.model_checkpoint_path)
+

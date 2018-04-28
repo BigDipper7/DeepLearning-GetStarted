@@ -23,17 +23,22 @@ class Yggdrasil:
     def __init__(self, n_class, n_dataset_len):
         Yggdrasil.n_class = n_class
         Yggdrasil.n_dataset_len = n_dataset_len
-        self.resnet = None
+        # self.resnet = None
+
+    def extract_features(self, X):
+        resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X, pooling=None)
+        print("==== Shape : ====")
+        print(resnet50.output_shape)
+        print("==== Shape +++ ====")
+        return resnet50
 
     def model(self, X):
 
         with tf.name_scope('network'):
             with tf.name_scope('resnet50'):
-                resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X, pooling=None)
-                print("==== Shape : ====")
-                print(resnet50.output_shape)
-                print("==== Shape +++ ====")
-                self.resnet = resnet50
+                # resnet50 = tf.keras.applications.resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=X, pooling=None)
+                resnet50 = self.extract_features(X)
+                # self.resnet = resnet50
 
             with tf.name_scope('avg_pool1'):
                 # 注意的是resnet50本身不是tensor，所以需要指定输出的tensor是什么
@@ -53,7 +58,3 @@ class Yggdrasil:
                 logits = tf.layers.dense(dropout1, units=self.n_class, activation=None, use_bias=True)
 
         return logits
-
-
-    # def extract_features(self, image_path):
-    #
