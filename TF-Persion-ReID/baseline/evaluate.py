@@ -5,6 +5,8 @@
 
 import tensorflow as tf
 import numpy as np
+from tensorflow.python.framework.errors_impl import OutOfRangeError
+
 from model import Yggdrasil
 from utils.datasets import get_ds_iterators
 from utils.const import LOG_DIR
@@ -43,6 +45,19 @@ with tf.Session() as sess:
             saver.restore(sess, ckpt.model_checkpoint_path)
 
     while True:
-        next_valid_ds = sess.run(next_op_valid)
-        print(np.asarray(next_valid_ds).shape)
+        try:
+            next_valid_ds = sess.run(next_op_valid)
+            fs = sess.run(tf.squeeze(features), feed_dict={X: next_valid_ds['image']})
+            lbs = next_valid_ds['label']
+            cids = next_valid_ds['cid']
+            pids = next_valid_ds['pid']
+            print(fs, fs.shape)
+            print(lbs, lbs.shape)
+            print(cids, cids.shape)
+            print(pids, pids.shape)
+            print("--------------------------------------------")
+
+        except OutOfRangeError:
+            print("Finish Iteration...")
+            break
 
