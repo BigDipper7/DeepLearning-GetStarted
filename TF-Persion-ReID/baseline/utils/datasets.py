@@ -213,7 +213,7 @@ def _ds_mapping_parser(item):
 def get_ds_iterators():
     '''
     获得dataset iterators
-    :return:
+    :return: n_classes_train, train_os_iterator, valid_os_iterator
     '''
     n_classes_train, plain_ds_train, plain_ds_valid = _re_group_plain_ds_info()
 
